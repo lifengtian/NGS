@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="Clojure" name="Clojure">
+      <configuration />
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/target/test-classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.clojure:clojure:1.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.clojure:clojure-contrib:1.2.0" level="project" />
+    <orderEntry type="library" name="Maven: incanter:incanter:1.2.2" level="project" />
+    <orderEntry type="library" name="Maven: incanter:incanter-core:1.2.2" level="project" />
+    <orderEntry type="library" name="Maven: incanter:parallelcolt:0.7.2" level="project" />
+    <orderEntry type="library" name="Maven: incanter:netlib-java:0.9.1" level="project" />
+    <orderEntry type="library" name="Maven: incanter:arpack-combo:0.1" level="project" />
+    <orderEntry type="library" name="Maven: incanter:incanter-io:1.2.2" level="project" />
+    <orderEntry type="library" name="Maven: net.sf.opencsv:opencsv:2.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.danlarkin:clojure-json:1.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: incanter:incanter-charts:1.2.2" level="project" />
+    <orderEntry type="library" name="Maven: incanter:jfreechart:1.0.13-no-gnujaxp" level="project" />
+    <orderEntry type="library" name="Maven: incanter:jcommon:1.0.16" level="project" />
+    <orderEntry type="library" name="Maven: incanter:incanter-processing:1.2.2" level="project" />
+    <orderEntry type="library" name="Maven: incanter:processing-core:1" level="project" />
+    <orderEntry type="library" name="Maven: incanter:incanter-mongodb:1.2.2" level="project" />
+    <orderEntry type="library" name="Maven: congomongo:congomongo:0.1.2-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.clojars.somnium:mongo-java-driver:1.1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.clojars.somnium:clojure-db-object:0.1.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: incanter:incanter-pdf:1.2.2" level="project" />
+    <orderEntry type="library" name="Maven: com.lowagie:itext:1.4" level="project" />
+    <orderEntry type="library" name="Maven: incanter:incanter-latex:1.2.2" level="project" />
+    <orderEntry type="library" name="Maven: net.sf.alxa:jlatexmath:0.9.1-SNAPSHOT" level="project" />
+  </component>
+</module>
+
