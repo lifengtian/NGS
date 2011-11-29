@@ -77,6 +77,7 @@ temp=$p
 
 R=$GATK/R
 Rscript=$R/2.7.0/bin/Rscript
+Rresources=$GATK/git/public/R
 
 beagle="/usr/java/latest/bin/java -Djava.io.tmpdir=$temp -Xmx24g -jar $gatk/beagle/beagle.jar"
 
@@ -439,7 +440,7 @@ if [ ! -f $p/step4.log ]; then
    			-recalFile $indel_recal \
    			-tranchesFile $indel_tranches \
    			-Rscript $Rscript \
-   			-resources $git/public/R \
+   			-resources $Rresources \
    			-rscriptFile $p/rscript.indel.r \
 
    		$javagatk \
