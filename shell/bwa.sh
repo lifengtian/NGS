@@ -1,4 +1,3 @@
-
 #current path
 p=`pwd`
 
@@ -82,11 +81,11 @@ jobs[$count]=`echo $job | awk '{print $3}'`
 echo "
 $BWA sampe -r \"@RG\\tID:$sm-$timestamp\\tSM:$sm\" $HG19 $r1.sai $r2.sai $r1.fastq.gz $r2.fastq.gz  | $SAMTOOLS view -S -b -o $p/$sm.bam -
 
-$JAVA -jar $PICARD/SortSam.jar I=$p/$sm.bam O=$p/$sm.sorted.bam SO=coordinate VALIDATION_STRINGENCY=SILENT TMP_DIR=. CREATE_INDEX=true
+$JAVA_BIN -jar $PICARD/SortSam.jar I=$p/$sm.bam O=$p/$sm.sorted.bam SO=coordinate VALIDATION_STRINGENCY=SILENT TMP_DIR=. CREATE_INDEX=true
 $SAMTOOLS flagstat $p/$sm.sorted.bam > $p/$sm.sorted.bam.flagstat
 $SAMTOOLS depth $p/$sm.sorted.bam | perl $GENOMECOVERAGE > $p/$sm.sorted.bam.genomecoverage
 $FASTQC -o QCreport -f $p/$sm.sorted.bam
-$JAVA -jar $PICARD/MarkDuplicates.jar I=$p/$sm.sorted.bam O=$p/$sm.dedup.bam M=$p/$sm.metric VALIDATION_STRINGENCY=SILENT TMP_DIR=. CREATE_INDEX=true
+$JAVA_BIN -jar $PICARD/MarkDuplicates.jar I=$p/$sm.sorted.bam O=$p/$sm.dedup.bam M=$p/$sm.metric VALIDATION_STRINGENCY=SILENT TMP_DIR=. CREATE_INDEX=true
 $SAMTOOLS flagstat $p/$sm.dedup.bam > $p/$sm.dedup.bam.flagstat
 $SAMTOOLS depth $p/$sm.dedup.bam | perl $GENOMECOVERAGE > $p/$sm.dedup.bam.genomecoverage
 " > $p/scripts/bwa2_$sm.sh
