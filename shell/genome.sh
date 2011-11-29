@@ -2,16 +2,16 @@
 # INPUT : a set of BAM files
 # OUTPUT: vcf
 # VERSION: Nov 23, 2011
-# NOTE: GATK v1.2-59-gd7367c1 changed 
-#       1. -B: binding --> -V for variants
-#       2. -comp,VCF   --> -comp x.vcf
+# NOTE: GATK v1.2-59-gd7367c1 changed: 
+#       1. -B: binding --> -V for variants; -input
+#       2. -comp,VCF   --> -comp x.vcf ; -eval y.vcf
 
 # step1: cleanup BAMs, produce realigned, recalibrated BAMs
-# step2: call variants using UG
-# step3: collect stats
-# step4: filter variants by standard hard-filtering or VQSR
+# step2: call variants using UG -glm BOTH (both SNP and INDEL)
+# step3: collect mapping stats
+# step4: filter variants by standard hard-filtering or VQSR (both SNP and INDEL)
 # step5: generate individual VCFs for each sample
-# step6: Impute with BEAGLE
+# step6: Impute with BEAGLE (optional)
  
 # to skip a step
 # create a stepx.log in the current dir
@@ -69,6 +69,7 @@ temp=$p
 #### are defined in ~/.bashrc
 
 
+#### 
 gatk=$GATK
 samtools=$SAMTOOLS
 R=$gatk/R
