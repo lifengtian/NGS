@@ -1,5 +1,4 @@
 
-
 #current path
 p=`pwd`
 
@@ -81,7 +80,7 @@ jobs[$count]=`echo $job | awk '{print $3}'`
         done
 
 echo "
-$BWA sampe -r "@RG\tID:$sm-$timestamp\tSM:$sm" $HG19 $r1.sai $r2.sai $r1.fastq.gz $r2.fastq.gz  | $SAMTOOLS view -S -b -o $p/$sm.bam -
+$BWA sampe -r \"@RG\\tID:$sm-$timestamp\\tSM:$sm\" $HG19 $r1.sai $r2.sai $r1.fastq.gz $r2.fastq.gz  | $SAMTOOLS view -S -b -o $p/$sm.bam -
 
 $JAVA -jar $PICARD/SortSam.jar I=$p/$sm.bam O=$p/$sm.sorted.bam SO=coordinate VALIDATION_STRINGENCY=SILENT TMP_DIR=. CREATE_INDEX=true
 $SAMTOOLS flagstat $p/$sm.sorted.bam > $p/$sm.sorted.bam.flagstat
