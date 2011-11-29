@@ -116,6 +116,13 @@ run_base=$2  # /mnt/isilon/cag/ngs/hiseq/111019_SN1089_0052_AC0995ACXX
 #check files
 check_files
 
+if [ ! -d $run_base/Data/Intensities/BaseCalls/Aligned ]; then
+    mkdir -p $run_base/Data/Intensities/BaseCalls/Aligned
+else
+#
+echo "Aligned exist. Exit"
+exit
+fi
 
 # parse sample_sheet
 #FCID,Lane,SampleID,SampleRef,Index,Description,Control,Recipe,Operator,SampleProject
@@ -151,7 +158,7 @@ exit
 fi
 
 # mkdir Aligned folder
-if [ ! -d $run_base/Data/Intensities/BaseCalls/Aligned ]; then
+
 #
     mkdir -p $run_base/Data/Intensities/BaseCalls/Aligned/Project_$SampleProject/Sample_$SampleID
     newr1=$run_base/Data/Intensities/BaseCalls/Aligned/Project_$SampleProject/Sample_$SampleID/${SampleID}_${Index}_L00${Lane}_R1_001
@@ -159,11 +166,7 @@ if [ ! -d $run_base/Data/Intensities/BaseCalls/Aligned ]; then
     ln -s $r1.fastq.gz $newr1.fastq.gz
     ln -s $r2.fastq.gz $newr2.fastq.gz
 
-else
-#
-    echo "Aligned exist. Exit"
-    exit
-fi
+
 
 echo bwa $newr1 $newr2 $SampleID
 fi
