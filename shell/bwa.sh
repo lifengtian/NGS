@@ -36,6 +36,9 @@ fi
 
 }
 
+
+
+
 ######### FUNCTION bwa ###########
 # run BWA
 ##################################
@@ -99,6 +102,60 @@ jobs[$count]=`echo $job | awk '{print $3}'`
 
 }
 
-############### Run BWA ################
+######## FUNCTION feed_bwa #########
+# find all fastq.gz pairs 
+# create Aligned folder
+# prepare calls for bwa 
+####################################
+
+function feed_bwa {
+sample_sheet=$1
+run_base=$2  # /mnt/isilon/cag/ngs/hiseq/111019_SN1089_0052_AC0995ACXX
+
+
+#check files
 check_files
-bwa $PWD/lane1_NoIndex_L001_R1_001 $PWD/lane1_NoIndex_L001_R2_001 lane1
+
+
+# parse sample_sheet
+#FCID,Lane,SampleID,SampleRef,Index,Description,Control,Recipe,Operator,SampleProject
+#C0995ACXX,1,lane1,Unknown,,'DefaultSample',N,,,C0995ACXX
+count=0
+cat $sample_sheet | while read LINE
+do
+let count++
+if [ $count -gt 1 ]; then
+echo "$count $LINE"
+FCID=`echo $LINE | cut -f1 -d','`
+Lane=`echo $LINE | cut -f2 -d','`
+SampleID=`echo $LINE | cut -f3 -d','`
+Index=`echo $LINE | cut -f5 -d','`
+SampleProject=`echo $LINE | cut -f10 -d','`
+
+
+if [ ! $Index ]; then
+Index="NoIndex"
+fi
+
+#check existence of fastq.gz
+r1=$run_base/Data/Intensities/BaseCalls/Unaligned/Project_$SampleProject/Sample_$SampleID/${SampleID}_${Index}_L00${Lane}_R1_001
+r2=$run_base/Data/Intensities/BaseCalls/Unaligned/Project_$SampleProject/Sample_$SampleID/${SampleID}_${Index}_L00${Lane}_R2_001
+if [ ! -f $r1.fastq.gz ]; then
+echo $r1.fastq.gz not exisit. Exit.
+exit
+fi
+
+if [ ! -f $r2.fastq.gz ]; then
+echo $r2.fastq.gz not exisit. Exit.
+exit
+fi
+
+echo bwa $r1 $r2 $SampleID
+fi
+done
+
+}
+
+
+feed_bwa samplesheet.csv /mnt/isilon/cag/ngs/hiseq/111019_SN1089_0052_AC0995ACXX
+
