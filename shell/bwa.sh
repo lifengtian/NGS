@@ -74,7 +74,7 @@ $BWA aln  -t 4 $HG19 $r2.fastq.gz > $r2.sai
 #$BWA sampe -r "@RG\tID:$sm-$timestamp\tSM:$sm" $HG19 $r1.sai $r2.sai $r1.fastq.gz $r2.fastq.gz  | $SAMTOOLS view -S -b -o $p/$sm.bam -
 " > $p/scripts/bwa1_$sm.sh
 
-job=`qsub -pe mpi 4 -e $p/log/bwa1_$sm.log -o $p/log/bwa1_$sm.log $p/scripts/bwa1_$sm.sh`
+job=`qsub -e $p/log/bwa1_$sm.log -o $p/log/bwa1_$sm.log $p/scripts/bwa1_$sm.sh`
 jobs[$count]=`echo $job | awk '{print $3}'`
 
         for i in ${jobs[*]}; do
@@ -168,7 +168,7 @@ fi
 
 
 
-echo bwa $newr1 $newr2 $SampleID
+bwa $newr1 $newr2 $SampleID
 fi
 done
 
