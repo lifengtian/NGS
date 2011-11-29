@@ -161,6 +161,8 @@ if [ ! -d $run_base/Data/Intensities/BaseCalls/Aligned ]; then
 
 else
 #
+    echo "Aligned exist. Exit"
+    exit
 fi
 
 echo bwa $newr1 $newr2 $SampleID
