@@ -1,5 +1,5 @@
-# GATK variant caller for genome 
-# INPUT : a set of cleaned BAM files
+# GATK variant caller for whole genome NGS sequencing
+# INPUT : a set of BAM files
 # OUTPUT: vcf
 # VERSION: Nov 23, 2011
 # NOTE: GATK v1.2-59-gd7367c1 changed 
@@ -39,7 +39,7 @@ SN1109_0079_lane6
 smlist=${bamlist[*]}
 
 ### Variant Quality Score Recalibration? ###
-VQSR=no
+VQSR=yes
 
 
 ## Default UnifiedGenotyper options;
@@ -63,19 +63,21 @@ platform="-dP illumina "
 #### paths
 #temp=/scratch/local
 temp=$p
-#cagapps=/work/1a/cagapps
-cagapps=/scr2/caglab/
-gatk=$cagapps/gatk
-samtools=$gatk/samtools/samtools
+
+#### Environmental variables such as
+####    GATK, SAMTOOLS, JAVA_BIN, JAVA_GATK 
+#### are defined in ~/.bashrc
+
+
+gatk=$GATK
+samtools=$SAMTOOLS
 R=$gatk/R
 Rscript=$R/2.7.0/bin/Rscript
 git=$gatk/git
-#beagle="$gatk/jdk/jdk1.6.0_22/bin/java -Djava.io.tmpdir=$temp -Xmx24g -jar $gatk/beagle/beagle.jar"
 beagle="/usr/java/latest/bin/java -Djava.io.tmpdir=$temp -Xmx24g -jar $gatk/beagle/beagle.jar"
-#java="$gatk/jdk/jdk1.6.0_22/bin/java -Djava.io.tmpdir=$temp -Xmx6g"
-java="/usr/java/latest/bin/java -Djava.io.tmpdir=$temp -Xmx6g"
-javagatk="$java -jar $git/dist/GenomeAnalysisTK.jar -DBQ 3"  # what a bug!
-picard=$gatk/picard
+java="$JAVA_BIN -Djava.io.tmpdir=$temp -Xmx6g"
+javagatk=$JAVA_GATK 
+picard=$PICARD
 
 
 chr=(chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY)
@@ -150,7 +152,8 @@ if [ "$bye" = "yes" ]; then
 	exit
 fi        
 
-hold_jid=100000000
+#### WARNing: don't delete the trailing ','
+hold_jid=100000000,
 
 #### Step 1. Cleanup BAM files
 
