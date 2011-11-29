@@ -150,12 +150,26 @@ echo $r2.fastq.gz not exisit. Exit.
 exit
 fi
 
-echo bwa $r1 $r2 $SampleID
+# mkdir Aligned folder
+if [ ! -d $run_base/Data/Intensities/BaseCalls/Aligned ]; then
+#
+    mkdir -p $run_base/Data/Intensities/BaseCalls/Aligned/Project_$SampleProject/Sample_$SampleID
+    newr1=$run_base/Data/Intensities/BaseCalls/Aligned/Project_$SampleProject/Sample_$SampleID/${SampleID}_${Index}_L00${Lane}_R1_001
+    newr2=$run_base/Data/Intensities/BaseCalls/Aligned/Project_$SampleProject/Sample_$SampleID/${SampleID}_${Index}_L00${Lane}_R2_001
+    ln -s $r1.fastq.gz $newr1.fastq.gz
+    ln -s $r2.fastq.gz $newr2.fastq.gz
+
+else
+#
+fi
+
+echo bwa $newr1 $newr2 $SampleID
 fi
 done
 
 }
 
 
-feed_bwa samplesheet.csv /mnt/isilon/cag/ngs/hiseq/111019_SN1089_0052_AC0995ACXX
+#feed_bwa samplesheet.csv /mnt/isilon/cag/ngs/hiseq/111019_SN1089_0052_AC0995ACXX
+feed_bwa    $1 $2
 
