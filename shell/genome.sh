@@ -74,7 +74,7 @@ samtools=$SAMTOOLS
 R=$gatk/R
 Rscript=$R/2.7.0/bin/Rscript
 git=$gatk/git
-beagle="/usr/java/latest/bin/java -Djava.io.tmpdir=$temp -Xmx24g -jar $gatk/beagle/beagle.jar"
+beagle="$JAVA_BIN -Djava.io.tmpdir=$temp -Xmx24g -jar $gatk/beagle/beagle.jar"
 java="$JAVA_BIN -Djava.io.tmpdir=$temp -Xmx6g"
 javagatk=$JAVA_GATK 
 picard=$PICARD
