@@ -63,13 +63,13 @@ platform="-dP illumina "
 
 #### 
 # GATK
-#export JAVA_BIN=$JAVA_HOME/bin/java
+#export JAVA_BIN=$JAVA_HOME/bin/JAVA
 #export GATK=/scr2/caglab/gatk
 #export GATK_JAR=$GATK/GenomeAnalysisTK.jar
 #export JAVA_GATK="$JAVA_BIN -Djava.io.tmpdir=. -Xmx6g -jar $GATK_JAR"
 #export HG19=$GATK/hg19/hg19.fa
 #export PICARD=$GATK/picard
-#export SAMTOOLS=$GATK/bin/samtools
+#export SAMTOOLS=$GATK/bin/SAMTOOLS
 #export BWA=$GATK/bin/bwa
 #export FASTQC=$GATK/FastQC
 
@@ -79,7 +79,7 @@ R=$GATK/R
 Rscript=$R/2.7.0/bin/Rscript
 Rresources=$GATK/git/public/R
 
-beagle="/usr/java/latest/bin/java -Djava.io.tmpdir=$temp -Xmx24g -jar $gatk/beagle/beagle.jar"
+beagle="/usr/JAVA/latest/bin/JAVA -Djava.io.tmpdir=$temp -Xmx24g -jar $gatk/beagle/beagle.jar"
 
 
 
@@ -178,19 +178,19 @@ for i in ${bamlist[*]}; do
 
     
     # remove duplicates
-    $java -jar $picard/MarkDuplicates.jar REMOVE_DUPLICATES=true I=$bam/$i.bam O=$p/$i.dedup.bam M=$p/$i.metrics VALIDATION_STRINGENCY=SILENT  CREATE_INDEX=true ASSUME_SORTED=true
+    $JAVA -jar $picard/MarkDuplicates.jar REMOVE_DUPLICATES=true I=$bam/$i.bam O=$p/$i.dedup.bam M=$p/$i.metrics VALIDATION_STRINGENCY=SILENT  CREATE_INDEX=true ASSUME_SORTED=true
     
 
     # Local realignment around Indels
     # 1. Prepare Realign Interval file
-    $javagatk \
+    $JAVA_GATK \
         -R $ref \
         -o $p/$i.dedup.intervals \
         -I $p/$i.dedup.bam \
 	-T RealignerTargetCreator
 
     # 2. Indel Realigner
-    $javagatk  \
+    $JAVA_GATK  \
         -I $p/$i.dedup.bam \
         -R $ref \
         -targetIntervals $p/$i.dedup.intervals \
@@ -202,9 +202,9 @@ for i in ${bamlist[*]}; do
     # 1.Count covariates 
 
 	# CountCovariates requires indexed BAMs
-    $samtools index $p/$i.dedup.indelrealigner.bam
+    $SAMTOOLS index $p/$i.dedup.indelrealigner.bam
 
-    $javagatk -R $ref  \
+    $JAVA_GATK -R $ref  \
         -knownSites $dbsnp \
         -I $p/$i.dedup.indelrealigner.bam \
         --covariate ReadGroupCovariate \
@@ -217,14 +217,14 @@ for i in ${bamlist[*]}; do
     
 
     # 2. Table Recalibration 
-    $javagatk -R $ref  \
+    $JAVA_GATK -R $ref  \
         -I $p/$i.dedup.indelrealigner.bam \
         --out $p/$i.dedup.indelrealigner.recal.bam \
         -recalFile $p/$i.dedup.indelrealigner.recal.csv \
         $platform \
         -T TableRecalibration \
 
-    $samtools index $p/$i.dedup.indelrealigner.recal.bam
+    $SAMTOOLS index $p/$i.dedup.indelrealigner.recal.bam
     
     " > $p/gatkscripts/$run.$i.step1.sh
 
@@ -259,7 +259,7 @@ if [ ! -f $p/step2.log ]; then
 	count=0
 
 	for c in ${chr[*]}; do
-    		echo "$javagatk -T UnifiedGenotyper -glm BOTH  -R $ref $bams -o $vcf.$c.vcf $opt  -L $c  -A AlleleBalance -A DepthOfCoverage -A FisherStrand
+    		echo "$JAVA_GATK -T UnifiedGenotyper -glm BOTH  -R $ref $bams -o $vcf.$c.vcf $opt  -L $c  -A AlleleBalance -A DepthOfCoverage -A FisherStrand
     		" > $p/gatkscripts/$run.step2.$c.sh
     	
 		job=`qsub -hold_jid $hold_jid -e $p/log/$run.step2.$c.log -o $p/log/$run.step2.$c.log $p/gatkscripts/$run.step2.$c.sh`
@@ -279,14 +279,17 @@ if [ ! -f $p/step2.log ]; then
 fi #end of step2
 
 ################################### Step 3 Collect Alignement and Depth of Coverage information  ########################################################
+if [ ! -f $p/step3.log ]; then
+        echo step3 started > $p/step3.log
+        date >> $p/step3.log
 
 for i in ${bamlist[*]}; do
     echo "
     # Summary report
-    $java -jar $picard/CollectAlignmentSummaryMetrics.jar I=$p/$i.dedup.indelrealigner.recal.bam O=$p/$i.dedup.indelrealigner.recal.picard.summary R=$ref VALIDATION_STRINGENCY=SILENT
-    $java -jar $picard/MeanQualityByCycle.jar I=$p/$i.dedup.indelrealigner.recal.bam O=$p/$i.dedup.indelrealigner.recal.meanquality \
+    $JAVA_BIN -jar $picard/CollectAlignmentSummaryMetrics.jar I=$p/$i.dedup.indelrealigner.recal.bam O=$p/$i.dedup.indelrealigner.recal.picard.summary R=$ref VALIDATION_STRINGENCY=SILENT
+    $JAVA_BIN  -jar $picard/MeanQualityByCycle.jar I=$p/$i.dedup.indelrealigner.recal.bam O=$p/$i.dedup.indelrealigner.recal.meanquality \
         CHART=$p/$i.dedup.indelrealigner.recal.meanquality.pdf VALIDATION_STRINGENCY=SILENT
-    $samtools flagstat $p/$i.dedup.indelrealigner.recal.bam > $p/$i.dedup.indelrealigner.recal.flagstat
+    $SAMTOOLS flagstat $p/$i.dedup.indelrealigner.recal.bam > $p/$i.dedup.indelrealigner.recal.flagstat
     " > $p/gatkscripts/$run.$i.step3.dedup.summary.sh
 	
     job=`qsub -hold_jid $hold_jid -o $p/log/$run.$i.step3.dedup.log $p/gatkscripts/$run.$i.step3.dedup.summary.sh`
@@ -294,24 +297,27 @@ for i in ${bamlist[*]}; do
     echo [1 SummaryMetrics: $tempjob ] waiting for UnifiedGenotyper: $hold_jid
                        
     echo "
-	$javagatk -T DepthOfCoverage -R $ref -I $p/$i.dedup.indelrealigner.recal.bam -o $p/$i.recal.doc -omitBaseOutput -ct 1 -ct 2 -ct 3 -ct 4 -ct 5 -ct 6 -ct 7 -ct 8
+	$JAVA_GATK -T DepthOfCoverage -R $ref -I $p/$i.dedup.indelrealigner.recal.bam -o $p/$i.recal.doc -omitBaseOutput -ct 1 -ct 2 -ct 3 -ct 4 -ct 5 -ct 6 -ct 7 -ct 8
 	" > $p/gatkscripts/$run.$i.step3.recal.doc.sh
    job=`qsub -hold_jid $hold_jid  -o $p/log/$run.$i.step3.recal.doc.log $p/gatkscripts/$run.$i.step3.recal.doc.sh`
    tempjob=`echo $job | awk '{print $3}'`
    echo [1 DepthOfCoverage: $tempjob ] waiting for UnifiedGenotyper: $hold_jid
 	
-   summarize original BAM statistics
+   #summarize original BAM statistics
     echo "
-       $java -jar $picard/CollectAlignmentSummaryMetrics.jar I=$p/$i.bam O=$p/$i.picard.summary R=$ref VALIDATION_STRINGENCY=SILENT
-       $java -jar $picard/MeanQualityByCycle.jar I=$p/$i.bam O=$p/$i.meanquality CHART=$p/$i.meanquality.pdf VALIDATION_STRINGENCY=SILENT
-       $samtools flagstat $p/$i.bam > $p/$i.flagstat
-       $javagatk -T DepthOfCoverage -R $ref -I $p/$i.bam -o $p/$i.doc -omitBaseOutput -ct 1 -ct 2 -ct 3 -ct 4 -ct 5 -ct 6 -ct 7 -ct 8
+       $JAVA_BIN -jar $picard/CollectAlignmentSummaryMetrics.jar I=$p/$i.bam O=$p/$i.picard.summary R=$ref VALIDATION_STRINGENCY=SILENT
+       $JAVA_BIN -jar $picard/MeanQualityByCycle.jar I=$p/$i.bam O=$p/$i.meanquality CHART=$p/$i.meanquality.pdf VALIDATION_STRINGENCY=SILENT
+       $SAMTOOLS flagstat $p/$i.bam > $p/$i.flagstat
+       $JAVA_GATK -T DepthOfCoverage -R $ref -I $p/$i.bam -o $p/$i.doc -omitBaseOutput -ct 1 -ct 2 -ct 3 -ct 4 -ct 5 -ct 6 -ct 7 -ct 8
        " > $p/gatkscripts/$run.$i.step3.doc.sh
     job=`qsub -hold_jid $hold_jid -o $p/log/$run.$i.step3.doc.log $p/gatkscripts/$run.$i.step3.doc.sh`
     tempjob=`echo $job | awk '{print $3}'`
     echo [1 Summary of Original BAM: $tempjob ] waiting for UnifiedGenotyper: $hold_jid
 
 done
+
+fi # end_of_step3
+
 
 
 if [ ! -f $p/step4.log ]; then
@@ -326,17 +332,17 @@ if [ ! -f $p/step4.log ]; then
 
 	echo "
     		#### combine VCFs
-    		$javagatk -T CombineVariants $vcf_chr -o $vcf -R $ref
+    		$JAVA_GATK -T CombineVariants $vcf_chr -o $vcf -R $ref
 
     		#### produce SNP and INDEL VCFs 
-    		$javagatk -T SelectVariants \
+    		$JAVA_GATK -T SelectVariants \
         		-R $ref \
         		-V $vcf \
 			-o $snp  \
 			-env   \
 			-selectType SNP  
 
-    		$javagatk -T SelectVariants \
+    		$JAVA_GATK -T SelectVariants \
 			-R $ref \
         		-V $vcf \
 			-o $indel  \
@@ -356,7 +362,7 @@ if [ ! -f $p/step4.log ]; then
 	## Oct 27, 2011 based on Best Practice 3
 	## QD < 2.0", "MQ < 40.0", "FS > 60.0", "HaplotypeScore > 13.0", "MQRankSum < -12.5", "ReadPosRankSum < -8.0".
 	echo "
-		$javagatk -T VariantFiltration \
+		$JAVA_GATK -T VariantFiltration \
 			-V $snp \
 			-o $snp.temp.vcf \
 			--clusterSize 3 \
@@ -365,7 +371,7 @@ if [ ! -f $p/step4.log ]; then
 			--filterName GATKSNPStandard \
 			-R $ref \
 
-		$javagatk -T SelectVariants \
+		$JAVA_GATK -T SelectVariants \
 			-R $ref \
 			-V $snp.temp.vcf \
 			-o $snp.gatkstandard.vcf  \
@@ -378,7 +384,7 @@ if [ ! -f $p/step4.log ]; then
 	### Indel
 	### DATA_TYPE_SPECIFIC_FILTERS should be "QD < 2.0", "ReadPosRankSum < -20.0", "InbreedingCoeff < -0.8", "FS > 200.0".
 	echo "
-	    $javagatk -T VariantFiltration \
+	    $JAVA_GATK -T VariantFiltration \
         	-V $indel \
         	-o $indel.temp.vcf \
         	--clusterSize 3 \
@@ -388,7 +394,7 @@ if [ ! -f $p/step4.log ]; then
         	-R $ref \
 
 	
-    	$javagatk -T SelectVariants \
+    	$JAVA_GATK -T SelectVariants \
         	-R $ref \
         	-V $indel.temp.vcf \
         	-o $indel.gatkstandard.vcf  \
@@ -406,7 +412,7 @@ if [ ! -f $p/step4.log ]; then
     		# OUT: cluster file
     		###########################################################################################
 
-   		$javagatk \
+   		$JAVA_GATK \
    			-T VariantRecalibrator \
    			-R $ref \
    			-input $snp \
@@ -421,7 +427,7 @@ if [ ! -f $p/step4.log ]; then
    			-resources $git/public/R \
    			-rscriptFile $p/rscript.snp.r \
 
-   		$javagatk \
+   		$JAVA_GATK \
    			-T ApplyRecalibration \
    			-R $ref \
    			-input $snp \
@@ -431,7 +437,7 @@ if [ ! -f $p/step4.log ]; then
    			-o $snp.vqsr.vcf
 
     		#indel -an InbreedingCoeff is not included
-   		$javagatk \
+   		$JAVA_GATK \
    			-T VariantRecalibrator \
    			-R $ref \
    			-input $indel \
@@ -444,7 +450,7 @@ if [ ! -f $p/step4.log ]; then
    			-resources $Rresources \
    			-rscriptFile $p/rscript.indel.r \
 
-   		$javagatk \
+   		$JAVA_GATK \
    			-T ApplyRecalibration \
    			-R $ref \
    			-input $indel \
@@ -478,15 +484,15 @@ date >> $p/step5.log
 for i in ${smlist[*]};do
 
     echo "
-    	$javagatk -T SelectVariants -sn $i -R $ref -V $snp.gatkstandard.vcf -o $p/$i.gatkstandard.snp.vcf  -env -ef 
-    	$javagatk -T SelectVariants -sn $i -R $ref -V $indel.gatkstandard.vcf -o $p/$i.gatkstandard.indel.vcf  -env -ef 
-    	$javagatk -T VariantEval  -eval $p/$i.gatkstandard.snp.vcf -D $dbsnp  -R $ref -o $p/$i.gatkstandard.report
+    	$JAVA_GATK -T SelectVariants -sn $i -R $ref -V $snp.gatkstandard.vcf -o $p/$i.gatkstandard.snp.vcf  -env -ef 
+    	$JAVA_GATK -T SelectVariants -sn $i -R $ref -V $indel.gatkstandard.vcf -o $p/$i.gatkstandard.indel.vcf  -env -ef 
+    	$JAVA_GATK -T VariantEval  -eval $p/$i.gatkstandard.snp.vcf -D $dbsnp  -R $ref -o $p/$i.gatkstandard.report
     "     > $p/gatkscripts/$run.step5.VariantEval.$i.sh
 
    if [ "$VQSR" = "yes" ]; then
         echo "
-        $javagatk -T SelectVariants -sn $i -R $ref -V $snp.vqsr.vcf -o $p/$i.gatkvqsr.snp.vcf  -env -ef 
-       	$javagatk -T VariantEval  -eval $p/$i.gatkvqsr.snp.vcf -comp $p/$i.gatkstandard.snp.vcf -D $dbsnp  -R $ref -o $p/$i.gatkvqsr.report
+        $JAVA_GATK -T SelectVariants -sn $i -R $ref -V $snp.vqsr.vcf -o $p/$i.gatkvqsr.snp.vcf  -env -ef 
+       	$JAVA_GATK -T VariantEval  -eval $p/$i.gatkvqsr.snp.vcf -comp $p/$i.gatkstandard.snp.vcf -D $dbsnp  -R $ref -o $p/$i.gatkvqsr.report
     	"     >> $p/gatkscripts/$run.step5.VariantEval.$i.sh
 		
 	fi
@@ -511,7 +517,7 @@ date >> $p/step6.log
 
 echo "
     date
-    $javagatk   -R $ref -T ProduceBeagleInput  -V $snp.gatkstandard.vcf -o $p/$run.beagle
+    $JAVA_GATK   -R $ref -T ProduceBeagleInput  -V $snp.gatkstandard.vcf -o $p/$run.beagle
 
     $beagle like=$p/$run.beagle out=
 
@@ -519,7 +525,7 @@ echo "
     gunzip -c $p/$run.beagle.gprobs.gz > $p/$run.beagle.gprobs
     gunzip -c $p/$run.beagle.phased.gz > $p/$run.beagle.phased
 
-    $javagatk -T BeagleOutputToVCF \
+    $JAVA_GATK -T BeagleOutputToVCF \
         -R $ref \
 		-V $recal.filtered.vcf \
         -beagleR2 $p/$run.beagle.r2 \
@@ -538,7 +544,7 @@ echo [4 Beagle imputation: $beagle_job]  waiting for VQSR: $vqsr_job
 #### Compare imputed and non-imputed results against each other and dbSNP
 for i in ${smlist[*]};do
     echo "
-    $javagatk -T SelectVariants \
+    $JAVA_GATK -T SelectVariants \
 	-sn $i \
 	-R $ref \
 	-V $p/$run.beagle.vcf \
@@ -546,14 +552,14 @@ for i in ${smlist[*]};do
 	-env \
 	-ef 
   
-    $javagatk -T VariantEval  \
+    $JAVA_GATK -T VariantEval  \
 	-eval $p/$i.recal.filtered.vcf \
 	-comp $p/$i.beagle.vcf \
 	-D $dbsnp  \
 	-R $ref \
 	-o $p/$i.normal_vs_beagle.gatkreport 
     
-    $javagatk -T VariantEval  \
+    $JAVA_GATK -T VariantEval  \
 	-eval $p/$i.beagle.vcf \
 	-D $dbsnp  \
 	-R $ref \
