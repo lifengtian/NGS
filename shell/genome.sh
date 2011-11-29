@@ -141,7 +141,8 @@ $PICARD/MarkDuplicates.jar \
 $PICARD/CollectAlignmentSummaryMetrics.jar \
 $PICARD/MeanQualityByCycle.jar \
 $Rscript \
-$Mills_Devine)
+$Mills_Devine \
+$HG19 )
 
 bye='no'
 for i in ${check_list[*]}; do
