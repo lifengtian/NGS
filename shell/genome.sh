@@ -12,9 +12,10 @@
 # step4: filter variants by standard hard-filtering or VQSR (both SNP and INDEL)
 # step5: generate individual VCFs for each sample
 # step6: Impute with BEAGLE (optional)
- 
+
 # to skip a step
 # create a stepx.log in the current dir
+
 
 
 ######################### How to Run the Pipeline #########################
@@ -22,18 +23,18 @@
 # modify the following parameters
 ## run folder, default is current dir
 p=`pwd`   
-bam=$p/bam
+bam=$p
 
 ## reference assembly
 ## genomes were aligned to hg19, all GATK b37 files were converted from "1" to "chr1"
 ref_version=b37
 
 ##output prefix
-run=genome
+run=SN1109_0079_2
 
 #### Make sure the bamlist contains the actual sample names in the bam file @RG SM tag!!!!!
 bamlist=(
-SN1109_0079_lane6
+SN1109_0079_lane2
 )
 #### samples list
 smlist=${bamlist[*]}
@@ -63,22 +64,19 @@ platform="-dP illumina "
 #### paths
 #temp=/scratch/local
 temp=$p
-
-#### Environmental variables such as
-####    GATK, SAMTOOLS, JAVA_BIN, JAVA_GATK 
-#### are defined in ~/.bashrc
-
-
-#### 
-gatk=$GATK
-samtools=$SAMTOOLS
+#cagapps=/work/1a/cagapps
+cagapps=/scr2/caglab/
+gatk=$cagapps/gatk
+samtools=$gatk/samtools/samtools
 R=$gatk/R
 Rscript=$R/2.7.0/bin/Rscript
 git=$gatk/git
-beagle="$JAVA_BIN -Djava.io.tmpdir=$temp -Xmx24g -jar $gatk/beagle/beagle.jar"
-java="$JAVA_BIN -Djava.io.tmpdir=$temp -Xmx6g"
-javagatk=$JAVA_GATK 
-picard=$PICARD
+#beagle="$gatk/jdk/jdk1.6.0_22/bin/java -Djava.io.tmpdir=$temp -Xmx24g -jar $gatk/beagle/beagle.jar"
+beagle="/usr/java/latest/bin/java -Djava.io.tmpdir=$temp -Xmx24g -jar $gatk/beagle/beagle.jar"
+#java="$gatk/jdk/jdk1.6.0_22/bin/java -Djava.io.tmpdir=$temp -Xmx6g"
+java="/usr/java/latest/bin/java -Djava.io.tmpdir=$temp -Xmx6g"
+javagatk="$java -jar $git/dist/GenomeAnalysisTK.jar -DBQ 3"  # what a bug!
+picard=$gatk/picard
 
 
 chr=(chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY)
@@ -100,6 +98,8 @@ hapmap=$gatk/b37/hapmap_3.3.b37.sites.vcf
 kg=$gatk/b37/1000G_omni2.5.b37.sites.vcf
 dbsnp=$gatk/b37/dbsnp_132.b37.vcf
 kg_indels=$gatk/b37/1000G_indels_for_realignment.b37.vcf
+Mills_Devine=$gatk/b37/Mills_Devine_2hit.indels.b37.sites.vcf
+
 else
 	echo "$ref_version has to be hg18 or b37"
 	exit
@@ -115,8 +115,10 @@ indel=$p/$run.INDEL.vcf
 clusterFile=$p/$run.clusters
 tabl=$p/$run.tabl
 VRR=$p/$run.VRR.report
-recal=$p/$run.recal.vcf
-tranches=$p/$run.output.dat.tranches
+snp_recal=$p/$run.snp.recal
+indel_recal=$p/$run.indel.recal
+snp_tranches=$p/$run.snp.tranches
+indel_tranches=$p/$run.indel.tranches
 
 #### create folders
 mkdir -p $p/log
@@ -136,7 +138,7 @@ $picard/MarkDuplicates.jar \
 $picard/CollectAlignmentSummaryMetrics.jar \
 $picard/MeanQualityByCycle.jar \
 $Rscript \
-)
+$Mills_Devine)
 
 bye='no'
 for i in ${check_list[*]}; do
@@ -153,8 +155,7 @@ if [ "$bye" = "yes" ]; then
 	exit
 fi        
 
-#### WARNing: don't delete the trailing ','
-hold_jid=100000000,
+hold_jid=100000000
 
 #### Step 1. Cleanup BAM files
 
@@ -206,7 +207,6 @@ for i in ${bamlist[*]}; do
         --covariate DinucCovariate \
         -recalFile $p/$i.dedup.indelrealigner.recal.csv \
         $platform \
-        -L $p/region.bed \
         -T CountCovariates \
     
 
@@ -216,7 +216,6 @@ for i in ${bamlist[*]}; do
         --out $p/$i.dedup.indelrealigner.recal.bam \
         -recalFile $p/$i.dedup.indelrealigner.recal.csv \
         $platform \
-        -L $p/region.bed \
         -T TableRecalibration \
 
     $samtools index $p/$i.dedup.indelrealigner.recal.bam
@@ -321,7 +320,7 @@ done
 
 echo "
     #### combine VCFs
-    $javagatk -T CombineVariants $vcf_chr -o $vcf -R $ref
+    #$javagatk -T CombineVariants $vcf_chr -o $vcf -R $ref
 
     #### produce SNP and INDEL VCFs 
     $javagatk -T SelectVariants \
@@ -408,37 +407,65 @@ echo "
    -resource:hapmap,known=false,training=true,truth=true,prior=15.0 $hapmap \
    -resource:omni,known=false,training=true,truth=false,prior=12.0 $kg \
    -resource:dbsnp,known=true,training=false,truth=false,prior=8.0 $dbsnp \
-   -an QD -an HaplotypeScore -an MQRankSum -an ReadPosRankSum -an HRun -an FS \
-   -recalFile $recal \
-   -tranchesFile $tranches \
+   -an QD -an HaplotypeScore -an MQRankSum -an ReadPosRankSum -an MQ -an FS -an DP \
+   -mode SNP \
+   -recalFile $snp_recal \
+   -tranchesFile $snp_tranches \
    -Rscript /usr/bin/Rscript \
    -resources $git/public/R \
-   -rscriptFile $p/rscript.r \
+   -rscriptFile $p/rscript.snp.r \
 
    $javagatk \
-	-T ApplyRecalibration \
+   -T ApplyRecalibration \
    -R $ref \
    -input $snp \
    --ts_filter_level 99.0 \
-   -tranchesFile $tranches \
-   -recalFile $recal \
+   -tranchesFile $snp_tranches \
+   -recalFile $snp_recal \
    -o $snp.vqsr.vcf
+
+    #indel -an InbreedingCoeff is not included
+   $javagatk \
+   -T VariantRecalibrator \
+   -R $ref \
+   -input $indel \
+   -resource:mills,VCF,known=true,training=true,truth=true,prior=12.0 $Mills_Devine \
+   -an QD -an FS -an HaplotypeScore -an ReadPosRankSum  \
+   -mode INDEL \
+   -recalFile $indel_recal \
+   -tranchesFile $indel_tranches \
+   -Rscript /usr/bin/Rscript \
+   -resources $git/public/R \
+   -rscriptFile $p/rscript.indel.r \
+
+   $javagatk \
+   -T ApplyRecalibration \
+   -R $ref \
+   -input $indel \
+   --ts_filter_level 99.0 \
+   -tranchesFile $indel_tranches \
+   -recalFile $indel_recal \
+   -o $indel.vqsr.vcf
 
 " >> $p/gatkscripts/$run.step4.sh
 fi
 
 job=`qsub -hold_jid $hold_jid -e $p/log/$run.step4.log -o $p/log/$run.step4.log $p/gatkscripts/$run.step4.sh`
-filter_job=`echo $job | awk '{print $3}'`
+hold_jid=`echo $job | awk '{print $3}'`
 echo [3 SelectVariants: $filter_job ] waiting for UnifiedGenotyper: $hold_jid 
 
 echo step4 ended >> $p/step4.log
 date >> $p/step4.log
 fi #end_of_step4
 
+
+
+
+
+######################################### step 5 #########################################
 if [ ! -f $p/step5.log ]; then
 echo step5 started  > $p/step5.log
 date >> $p/step5.log
-
 
 
 #### Produce individual VCFs  
@@ -448,16 +475,16 @@ for i in ${smlist[*]};do
     	$javagatk -T SelectVariants -sn $i -R $ref -V $snp.gatkstandard.vcf -o $p/$i.gatkstandard.snp.vcf  -env -ef 
     	$javagatk -T SelectVariants -sn $i -R $ref -V $indel.gatkstandard.vcf -o $p/$i.gatkstandard.indel.vcf  -env -ef 
     	$javagatk -T VariantEval  -eval $p/$i.gatkstandard.snp.vcf -D $dbsnp  -R $ref -o $p/$i.gatkstandard.report
-    "     > $p/gatkscripts/$run.step4.VariantEval.$i.sh
+    "     > $p/gatkscripts/$run.step5.VariantEval.$i.sh
 
-	if [ -f $snp.vqsr.vcf ]; then
-		echo "
-            $javagatk -T SelectVariants -sn $i -R $ref -V $snp.vqsr.vcf -o $p/$i.gatkvqsr.snp.vcf  -env -ef 
-        	$javagatk -T VariantEval  -eval $p/$i.gatkvqsr.snp.vcf -comp $p/$i.gatkstandard.snp.vcf -D $dbsnp  -R $ref -o $p/$i.gatkvqsr.report
-    		"     >> $p/gatkscripts/$run.step4.VariantEval.$i.sh
+   if [ "$VQSR" = "yes" ]; then
+        echo "
+        $javagatk -T SelectVariants -sn $i -R $ref -V $snp.vqsr.vcf -o $p/$i.gatkvqsr.snp.vcf  -env -ef 
+       	$javagatk -T VariantEval  -eval $p/$i.gatkvqsr.snp.vcf -comp $p/$i.gatkstandard.snp.vcf -D $dbsnp  -R $ref -o $p/$i.gatkvqsr.report
+    	"     >> $p/gatkscripts/$run.step5.VariantEval.$i.sh
 		
 	fi
-	job=`qsub -hold_jid $filter_job -e $p/log/$run.step4.VariantEval.$i.log -o $p/log/$run.step4.VariantEval.$i.log $p/gatkscripts/$run.step4.VariantEval.$i.sh`
+	job=`qsub -hold_jid $hold_jid -e $p/log/$run.step5.VariantEval.$i.log -o $p/log/$run.step5.VariantEval.$i.log $p/gatkscripts/$run.step5.VariantEval.$i.sh`
 	tempjob=`echo $job | awk '{print $3}'`
     echo [3 VariantEval: $tempjob]  waiting for : $filter_job 
 
