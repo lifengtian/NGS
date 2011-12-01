@@ -1,0 +1,33 @@
+
+os="mac"
+
+if [ "$os" == "mac" ]; then
+	echo mac
+	export JAVA_HOME=/usr  
+export JAVA_BIN=$JAVA_HOME/bin/java
+export GATK=$HOME/gatk
+export GATK_JAR=$GATK/GenomeAnalysisTK.jar
+export JAVA_GATK="$JAVA_BIN -Djava.io.tmpdir=. -Xmx6g -jar $GATK_JAR"
+export HG19=$GATK/hg19/hg19.fa
+export PICARD=$GATK/picard
+export SAMTOOLS=$GATK/bin/samtools
+export BWA=$GATK/bin/bwa
+export FASTQC=$GATK/FastQC
+	echo done
+fi
+
+if [ "$os" == "resolute" ]; then
+# GATK
+export JAVA_HOME=/usr  
+export JAVA_BIN=$JAVA_HOME/bin/java
+export GATK=/mnt/isilon/cag/ngs/hiseq/gatk
+export GATK_JAR=$GATK/GenomeAnalysisTK.jar
+export JAVA_GATK="$JAVA_BIN -Djava.io.tmpdir=. -Xmx6g -jar $GATK_JAR"
+export HG19=$GATK/hg19/hg19.fa
+export PICARD=$GATK/picard
+export SAMTOOLS=$GATK/bin/samtools
+export BWA=$GATK/bin/bwa
+export FASTQC=$GATK/FastQC
+
+fi
+
