@@ -43,7 +43,7 @@ smlist=${bamlist[*]}
 VQSR=no
 
 # exome enrichment target                                                                                    
-CaptureBed=$gatk/bed/SureSelect50mbclean
+CaptureBed=$GATK/bed/SureSelect50mbclean
 
 
 ## Default UnifiedGenotyper options;
