@@ -68,18 +68,17 @@ mkdir -p $p/log
 #align
 timestamp=`date +%s`
 echo "
-$BWA aln  -t 4 $HG19 $r1.fastq.gz > $r1.sai
-$BWA aln  -t 4 $HG19 $r2.fastq.gz > $r2.sai
+$BWA aln  -t 6 $HG19 $r1.fastq.gz > $r1.sai
+$BWA aln  -t 6 $HG19 $r2.fastq.gz > $r2.sai
 
 #$BWA sampe -r "@RG\tID:$sm-$timestamp\tSM:$sm" $HG19 $r1.sai $r2.sai $r1.fastq.gz $r2.fastq.gz  | $SAMTOOLS view -S -b -o $p/$sm.bam -
 " > $p/scripts/bwa1_$sm.sh
 
-job=`qsub -e $p/log/bwa1_$sm.log -o $p/log/bwa1_$sm.log $p/scripts/bwa1_$sm.sh`
-jobs[$count]=`echo $job | awk '{print $3}'`
+job=`qsub -pe smp 6 -e $p/log/bwa1_$sm.err.log -o $p/log/bwa1_$sm.log $p/scripts/bwa1_$sm.sh`
+echo $job
+jobs=`echo $job | awk '{print $3}'`
 
-        for i in ${jobs[*]}; do
-                hold_jid=$hold_jid${i},
-        done
+hold_jid=$jobs
 
 echo "
 $BWA sampe -r \"@RG\\tID:$sm-$timestamp\\tSM:$sm\" $HG19 $r1.sai $r2.sai $r1.fastq.gz $r2.fastq.gz  | $SAMTOOLS view -S -b -o $p/$sm.bam -
@@ -93,12 +92,7 @@ $SAMTOOLS flagstat $p/$sm.dedup.bam > $p/$sm.dedup.bam.flagstat
 $SAMTOOLS depth $p/$sm.dedup.bam | perl $GENOMECOVERAGE > $p/$sm.dedup.bam.genomecoverage
 " > $p/scripts/bwa2_$sm.sh
 
-job=`qsub -hold_jid $hold_jid -e $p/log/bwa2_$sm.log -o $p/log/bwa2_$sm.log $p/scripts/bwa2_$sm.sh`
-
-jobs[$count]=`echo $job | awk '{print $3}'`
-        for i in ${jobs[*]}; do
-                hold_jid=$hold_jid${i},
-        done
+job=`qsub -hold_jid $hold_jid -e $p/log/bwa2_$sm.err.log -o $p/log/bwa2_$sm.log $p/scripts/bwa2_$sm.sh`
 
 }
 
@@ -166,10 +160,10 @@ fi
     ln -s $r1.fastq.gz $newr1.fastq.gz
     ln -s $r2.fastq.gz $newr2.fastq.gz
 
-
-
 bwa $newr1 $newr2 $SampleID
-fi
+sleep 10
+fi # end_of_count -gt 1
+
 done
 
 }
