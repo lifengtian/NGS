@@ -30,11 +30,12 @@ bam=$p
 ref_version=b37
 
 ##output prefix
-run=SN1109_0079_2
+run=AS
 
 #### Make sure the bamlist contains the actual sample names in the bam file @RG SM tag!!!!!
 bamlist=(
-SN1109_0079_lane2
+AS01
+AS02
 )
 #### samples list
 smlist=${bamlist[*]}
@@ -51,6 +52,8 @@ opt="-stand_call_conf 10 -stand_emit_conf 30"
 # Illumina
 platform="-dP illumina "
 
+# Resolute queue
+queue="all.q@n-0-1.local,all.q@n-0-10.local,all.q@n-0-11.local,all.q@n-0-12.local,all.q@n-0-13.local,all.q@n-0-14.local,all.q@n-0-15.local,all.q@n-0-16.local,all.q@n-0-17.local,all.q@n-0-18.local,all.q@n-0-19.local,all.q@n-0-2.local,all.q@n-0-20.local,all.q@n-0-21.local,all.q@n-0-22.local,all.q@n-0-23.local,all.q@n-0-24.local,all.q@n-0-25.local,all.q@n-0-26.local,all.q@n-0-27.local,all.q@n-0-28.local,all.q@n-0-29.local,all.q@n-0-3.local,all.q@n-0-30.local,all.q@n-0-31.local,all.q@n-0-4.local,all.q@n-0-5.local,all.q@n-0-6.local,all.q@n-0-7.local,all.q@n-0-8.local,all.q@n-0-9.local"
 
 ## Please check the storage space
 # make sure you have enough tmp space!!!!
@@ -178,7 +181,7 @@ for i in ${bamlist[*]}; do
 
     
     # remove duplicates
-    $JAVA_BIN -jar $PICARD/MarkDuplicates.jar REMOVE_DUPLICATES=true I=$bam/$i.bam O=$p/$i.dedup.bam M=$p/$i.metrics VALIDATION_STRINGENCY=SILENT  CREATE_INDEX=true ASSUME_SORTED=true
+    $JAVA_BIN -jar $picard/MarkDuplicates.jar REMOVE_DUPLICATES=true I=$bam/$i.bam O=$p/$i.dedup.bam M=$p/$i.metrics VALIDATION_STRINGENCY=SILENT  CREATE_INDEX=true ASSUME_SORTED=true
     
 
     # Local realignment around Indels
@@ -222,13 +225,15 @@ for i in ${bamlist[*]}; do
         --out $p/$i.dedup.indelrealigner.recal.bam \
         -recalFile $p/$i.dedup.indelrealigner.recal.csv \
         $platform \
-        -T TableRecalibration \
+        --default_read_group defaultRG \
+	-T TableRecalibration \
 
     $SAMTOOLS index $p/$i.dedup.indelrealigner.recal.bam
     
     " > $p/gatkscripts/$run.$i.step1.sh
 
-    job=`qsub -e $p/log/$run.$i.step1.log -o $p/log/$run.$i.step1.log $p/gatkscripts/$run.$i.step1.sh`
+    job=`qsub -q $queue -e $p/log/$run.$i.step1.log -o $p/log/$run.$i.step1.log $p/gatkscripts/$run.$i.step1.sh`
+    sleep 20
     jobs[$count]=`echo $job | awk '{print $3}'`
     echo [1 BAM cleanup] ${jobs[$count]} submitted
     let count=$count+1
@@ -262,8 +267,9 @@ if [ ! -f $p/step2.log ]; then
     		echo "$JAVA_GATK -T UnifiedGenotyper -glm BOTH  -R $ref $bams -o $vcf.$c.vcf $opt  -L $c  -A AlleleBalance -A DepthOfCoverage -A FisherStrand
     		" > $p/gatkscripts/$run.step2.$c.sh
     	
-		job=`qsub -hold_jid $hold_jid -e $p/log/$run.step2.$c.log -o $p/log/$run.step2.$c.log $p/gatkscripts/$run.step2.$c.sh`
-    		ug_jobs[$count]=`echo $job | awk '{print $3}'`
+	job=`qsub -q $queue -hold_jid $hold_jid -e $p/log/$run.step2.$c.log -o $p/log/$run.step2.$c.log $p/gatkscripts/$run.step2.$c.sh`
+	sleep 5    	
+	ug_jobs[$count]=`echo $job | awk '{print $3}'`
     		echo UnifiedGenotyper job for $c: ${ug_jobs[$count]} submitted
     		let count=count+1
 	done
@@ -286,31 +292,31 @@ if [ ! -f $p/step3.log ]; then
 for i in ${bamlist[*]}; do
     echo "
     # Summary report
-    $JAVA_BIN -jar $PICARD/CollectAlignmentSummaryMetrics.jar I=$p/$i.dedup.indelrealigner.recal.bam O=$p/$i.dedup.indelrealigner.recal.picard.summary R=$ref VALIDATION_STRINGENCY=SILENT
-    $JAVA_BIN  -jar $PICARD/MeanQualityByCycle.jar I=$p/$i.dedup.indelrealigner.recal.bam O=$p/$i.dedup.indelrealigner.recal.meanquality \
+    $JAVA_BIN -jar $picard/CollectAlignmentSummaryMetrics.jar I=$p/$i.dedup.indelrealigner.recal.bam O=$p/$i.dedup.indelrealigner.recal.picard.summary R=$ref VALIDATION_STRINGENCY=SILENT
+    $JAVA_BIN  -jar $picard/MeanQualityByCycle.jar I=$p/$i.dedup.indelrealigner.recal.bam O=$p/$i.dedup.indelrealigner.recal.meanquality \
         CHART=$p/$i.dedup.indelrealigner.recal.meanquality.pdf VALIDATION_STRINGENCY=SILENT
     $SAMTOOLS flagstat $p/$i.dedup.indelrealigner.recal.bam > $p/$i.dedup.indelrealigner.recal.flagstat
     " > $p/gatkscripts/$run.$i.step3.dedup.summary.sh
 	
-    job=`qsub -hold_jid $hold_jid -o $p/log/$run.$i.step3.dedup.log $p/gatkscripts/$run.$i.step3.dedup.summary.sh`
+    job=`qsub -q $queue -hold_jid $hold_jid -o $p/log/$run.$i.step3.dedup.log $p/gatkscripts/$run.$i.step3.dedup.summary.sh`
     tempjob=`echo $job | awk '{print $3}'`
     echo [1 SummaryMetrics: $tempjob ] waiting for UnifiedGenotyper: $hold_jid
                        
     echo "
 	$JAVA_GATK -T DepthOfCoverage -R $ref -I $p/$i.dedup.indelrealigner.recal.bam -o $p/$i.recal.doc -omitBaseOutput -ct 1 -ct 2 -ct 3 -ct 4 -ct 5 -ct 6 -ct 7 -ct 8
 	" > $p/gatkscripts/$run.$i.step3.recal.doc.sh
-   job=`qsub -hold_jid $hold_jid  -o $p/log/$run.$i.step3.recal.doc.log $p/gatkscripts/$run.$i.step3.recal.doc.sh`
+   job=`qsub -q $queue -hold_jid $hold_jid  -o $p/log/$run.$i.step3.recal.doc.log $p/gatkscripts/$run.$i.step3.recal.doc.sh`
    tempjob=`echo $job | awk '{print $3}'`
    echo [1 DepthOfCoverage: $tempjob ] waiting for UnifiedGenotyper: $hold_jid
 	
    #summarize original BAM statistics
     echo "
-       $JAVA_BIN -jar $PICARD/CollectAlignmentSummaryMetrics.jar I=$p/$i.bam O=$p/$i.picard.summary R=$ref VALIDATION_STRINGENCY=SILENT
-       $JAVA_BIN -jar $PICARD/MeanQualityByCycle.jar I=$p/$i.bam O=$p/$i.meanquality CHART=$p/$i.meanquality.pdf VALIDATION_STRINGENCY=SILENT
+       $JAVA_BIN -jar $picard/CollectAlignmentSummaryMetrics.jar I=$p/$i.bam O=$p/$i.picard.summary R=$ref VALIDATION_STRINGENCY=SILENT
+       $JAVA_BIN -jar $picard/MeanQualityByCycle.jar I=$p/$i.bam O=$p/$i.meanquality CHART=$p/$i.meanquality.pdf VALIDATION_STRINGENCY=SILENT
        $SAMTOOLS flagstat $p/$i.bam > $p/$i.flagstat
        $JAVA_GATK -T DepthOfCoverage -R $ref -I $p/$i.bam -o $p/$i.doc -omitBaseOutput -ct 1 -ct 2 -ct 3 -ct 4 -ct 5 -ct 6 -ct 7 -ct 8
        " > $p/gatkscripts/$run.$i.step3.doc.sh
-    job=`qsub -hold_jid $hold_jid -o $p/log/$run.$i.step3.doc.log $p/gatkscripts/$run.$i.step3.doc.sh`
+    job=`qsub -q $queue -hold_jid $hold_jid -o $p/log/$run.$i.step3.doc.log $p/gatkscripts/$run.$i.step3.doc.sh`
     tempjob=`echo $job | awk '{print $3}'`
     echo [1 Summary of Original BAM: $tempjob ] waiting for UnifiedGenotyper: $hold_jid
 
@@ -462,7 +468,7 @@ if [ ! -f $p/step4.log ]; then
 		" >> $p/gatkscripts/$run.step4.sh
 	fi
 
-	job=`qsub -hold_jid $hold_jid -e $p/log/$run.step4.log -o $p/log/$run.step4.log $p/gatkscripts/$run.step4.sh`
+	job=`qsub -q $queue -hold_jid $hold_jid -e $p/log/$run.step4.log -o $p/log/$run.step4.log $p/gatkscripts/$run.step4.sh`
 	hold_jid=`echo $job | awk '{print $3}'`
 	echo [3 SelectVariants: $filter_job ] waiting for UnifiedGenotyper: $hold_jid 
 
@@ -496,7 +502,7 @@ for i in ${smlist[*]};do
     	"     >> $p/gatkscripts/$run.step5.VariantEval.$i.sh
 		
 	fi
-	job=`qsub -hold_jid $hold_jid -e $p/log/$run.step5.VariantEval.$i.log -o $p/log/$run.step5.VariantEval.$i.log $p/gatkscripts/$run.step5.VariantEval.$i.sh`
+	job=`qsub -q $queue -hold_jid $hold_jid -e $p/log/$run.step5.VariantEval.$i.log -o $p/log/$run.step5.VariantEval.$i.log $p/gatkscripts/$run.step5.VariantEval.$i.sh`
 	tempjob=`echo $job | awk '{print $3}'`
     echo [3 VariantEval: $tempjob]  waiting for : $filter_job 
 
@@ -536,7 +542,7 @@ echo "
    date
 " > $p/gatkscripts/$run.step5.beagle.sh
 
-job=`qsub -hold_jid $vqsr_job -e $p/log/$run.step5.beagle.log -o $p/log/$run.step5.beagle.log  $p/gatkscripts/$run.step5.beagle.sh` 
+job=`qsub -q $queue -hold_jid $vqsr_job -e $p/log/$run.step5.beagle.log -o $p/log/$run.step5.beagle.log  $p/gatkscripts/$run.step5.beagle.sh` 
 beagle_job=`echo $job | awk '{print $3}'`
 echo [4 Beagle imputation: $beagle_job]  waiting for VQSR: $vqsr_job 
 
@@ -566,7 +572,7 @@ for i in ${smlist[*]};do
 	-o $p/$i.beagle.gatkreport
     "     > $p/gatkscripts/$run.$i.beagle.VariantEval.sh
 
-    job=`qsub -e $p/log/$run.$i.beagle.VariantEval.log -o $p/log/$run.$i.beagle.VariantEval.log -hold_jid $beagle_job $p/gatkscripts/$run.$i.beagle.VariantEval.sh`
+    job=`qsub -q $queue -e $p/log/$run.$i.beagle.VariantEval.log -o $p/log/$run.$i.beagle.VariantEval.log -hold_jid $beagle_job $p/gatkscripts/$run.$i.beagle.VariantEval.sh`
 	tempjob=`echo $job | awk '{print $3}'`
 	echo [4 VariantEval: $tempjob] waiting for Beagle Imputation: $beagle_job
 done
