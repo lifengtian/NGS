@@ -11,7 +11,7 @@ my $usage="perl create_avHet.pl\n";
 
 my $csv = Text::CSV->new();
 
-my $hash=retrieve("dbSNP132_avHet.storable");
+my $hash=retrieve("/mnt/isilon/cag/ngs/hiseq/gatk/dbSNP132_avHet.storable");
 
 foreach my $fn ( `ls *.csv` ) {
 open IN, $fn or die "error open $fn";
