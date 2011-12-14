@@ -41,7 +41,7 @@ AS02
 smlist=${bamlist[*]}
 
 ### Variant Quality Score Recalibration? ###
-VQSR=yes
+VQSR=no
 
 
 ## Default UnifiedGenotyper options;
@@ -271,7 +271,7 @@ if [ ! -f $p/step2.log ]; then
     		" > $p/gatkscripts/$run.step2.$c.sh
     	
 	job=`qsub $qsub_opt -hold_jid $hold_jid -e $p/log/$run.step2.$c.log -o $p/log/$run.step2.$c.log $p/gatkscripts/$run.step2.$c.sh`
-	sleep 5    	
+	sleep 2    	
 	ug_jobs[$count]=`echo $job | awk '{print $3}'`
     		echo UnifiedGenotyper job for $c: ${ug_jobs[$count]} submitted
     		let count=count+1
@@ -319,7 +319,7 @@ if [ ! -f $p/step3.log ]; then
 			-env  \
 			-selectType INDEL 
 
-	" > $p/gatkscripts/$run.step4.sh
+	" > $p/gatkscripts/$run.step3.sh
 
 
 	### for whole exome, we have several choices here
@@ -458,16 +458,16 @@ for i in ${smlist[*]};do
     	$JAVA_GATK -T SelectVariants -sn $i -R $ref -V $snp.gatkstandard.vcf -o $p/$i.gatkstandard.snp.vcf  -env -ef 
     	$JAVA_GATK -T SelectVariants -sn $i -R $ref -V $indel.gatkstandard.vcf -o $p/$i.gatkstandard.indel.vcf  -env -ef 
     	$JAVA_GATK -T VariantEval  -eval $p/$i.gatkstandard.snp.vcf -D $dbsnp  -R $ref -o $p/$i.gatkstandard.report
-    "     > $p/gatkscripts/$run.step5.VariantEval.$i.sh
+    "     > $p/gatkscripts/$run.step4.VariantEval.$i.sh
 
    if [ "$VQSR" = "yes" ]; then
         echo "
         $JAVA_GATK -T SelectVariants -sn $i -R $ref -V $snp.vqsr.vcf -o $p/$i.gatkvqsr.snp.vcf  -env -ef 
        	$JAVA_GATK -T VariantEval  -eval $p/$i.gatkvqsr.snp.vcf -comp $p/$i.gatkstandard.snp.vcf -D $dbsnp  -R $ref -o $p/$i.gatkvqsr.report
-    	"     >> $p/gatkscripts/$run.step5.VariantEval.$i.sh
+    	"     >> $p/gatkscripts/$run.step4.VariantEval.$i.sh
 		
 	fi
-	job=`qsub $qsub_opt -hold_jid $hold_jid -e $p/log/$run.step5.VariantEval.$i.log -o $p/log/$run.step5.VariantEval.$i.log $p/gatkscripts/$run.step5.VariantEval.$i.sh`
+	job=`qsub $qsub_opt -hold_jid $hold_jid -e $p/log/$run.step4.VariantEval.$i.log -o $p/log/$run.step4.VariantEval.$i.log $p/gatkscripts/$run.step4.VariantEval.$i.sh`
 	tempjob=`echo $job | awk '{print $3}'`
     echo [3 VariantEval: $tempjob]  waiting for : $hold_job 
 
