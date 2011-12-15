@@ -1,0 +1,8 @@
+run_name: Test
+VQSR: no
+platform: '"-dP illumina" '
+target: genome
+projects:
+  - Epilepsy 
+  - Aicardi
+  - EhlersDanlos

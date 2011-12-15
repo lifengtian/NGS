@@ -48,11 +48,11 @@ r2=$3
 
 if [ ! -f $r1.fastq.gz ]; then
   echo $r1.fastq.gz not exist!
-#  exit
+  exit
 fi
 if [ ! -f $r2.fastq.gz ]; then
   echo $r2.fastq.gz not exist!
-#  exit
+  exit
 fi
 
 
@@ -73,33 +73,26 @@ timestamp=`date +%s`
 echo "
 $BWA aln  -t 4 $HG19 $r1.fastq.gz > $r1.sai
 $BWA aln  -t 4 $HG19 $r2.fastq.gz > $r2.sai
-" > $p/scripts/$sm.aln.sh
+" > $p/scripts/$sm-$lane-$index.aln.sh
 
-echo $p/scripts/$sm.aln.sh
-cat $p/scripts/$sm.aln.sh
-echo
-echo
 
-#job=`qsub -pe smp 4 -e $p/log/$sm.aln.err.log -o $p/log/$sm.aln.log $p/scripts/$sm.aln.sh`
-#jobs=`echo $job | awk '{print $3}'`
+job=`qsub -m abe -M lifeng4209@gmail.com -pe smp 4 -V -e $p/log/$sm-$lane-$index.aln.err.log -o $p/log/$sm-$lane-$index.aln.log $p/scripts/$sm-$lane-$index.aln.sh`
+jobs=`echo $job | awk '{print $3}'`
 
-#hold_jid=$jobs
+hold_jid=$jobs
 
 echo "
-$BWA sampe -r \"@RG\\tID:$fid-$lane-$index-$sm\\tSM:$sm\" $HG19 $r1.sai $r2.sai $r1.fastq.gz $r2.fastq.gz  | $SAMTOOLS view -S -b -o $p/$sm.bam -
-$JAVA_BIN -jar $PICARD/SortSam.jar I=$p/$sm.bam O=$p/$sm.sorted.bam SO=coordinate VALIDATION_STRINGENCY=SILENT TMP_DIR=$p/temp CREATE_INDEX=true
-$SAMTOOLS flagstat $p/$sm.sorted.bam > $p/$sm.sorted.bam.flagstat
-$SAMTOOLS depth $p/$sm.sorted.bam | perl $GENOMECOVERAGE > $p/$sm.sorted.bam.genomecoverage
-$FASTQC -o QCreport -f $p/$sm.sorted.bam
-$JAVA_BIN -jar $PICARD/MarkDuplicates.jar I=$p/$sm.sorted.bam O=$p/$sm.dedup.bam M=$p/$sm.metric VALIDATION_STRINGENCY=SILENT TMP_DIR=$p/temp CREATE_INDEX=true REMOVE_DUPLICATES=true
-$SAMTOOLS flagstat $p/$sm.dedup.bam > $p/$sm.dedup.bam.flagstat
-$SAMTOOLS depth $p/$sm.dedup.bam | perl $GENOMECOVERAGE > $p/$sm.dedup.bam.genomecoverage
-" > $p/scripts/$sm.sampe.sh
+$BWA sampe -r \"@RG\\tID:$fid-$lane-$index-$sm\\tSM:$sm\" $HG19 $r1.sai $r2.sai $r1.fastq.gz $r2.fastq.gz  | $SAMTOOLS view -S -b -o $p/$sm-$lane-$index.bam -
+$JAVA_BIN -jar $PICARD/SortSam.jar I=$p/$sm-$lane-$index.bam O=$p/$sm-$lane-$index.sorted.bam SO=coordinate VALIDATION_STRINGENCY=SILENT TMP_DIR=$p/temp CREATE_INDEX=true
+$SAMTOOLS flagstat $p/$sm-$lane-$index.sorted.bam > $p/$sm-$lane-$index.sorted.bam.flagstat
+$SAMTOOLS depth $p/$sm-$lane-$index.sorted.bam | perl $GENOMECOVERAGE > $p/$sm-$lane-$index.sorted.bam.genomecoverage
+$FASTQC -o QCreport -f $p/$sm-$lane-$index.sorted.bam
+$JAVA_BIN -jar $PICARD/MarkDuplicates.jar I=$p/$sm-$lane-$index.sorted.bam O=$p/$sm-$lane-$index.dedup.bam M=$p/$sm-$lane-$index.metric VALIDATION_STRINGENCY=SILENT TMP_DIR=$p/temp CREATE_INDEX=true REMOVE_DUPLICATES=true
+$SAMTOOLS flagstat $p/$sm-$lane-$index.dedup.bam > $p/$sm-$lane-$index.dedup.bam.flagstat
+$SAMTOOLS depth $p/$sm-$lane-$index.dedup.bam | perl $GENOMECOVERAGE > $p/$sm-$lane-$index.dedup.bam.genomecoverage
+" > $p/scripts/$sm-$lane-$index.sampe.sh
 
-echo $p/scripts/$sm.sampe.sh
-cat $p/scripts/$sm.sampe.sh
-
-#job=`qsub -hold_jid $hold_jid -e $p/log/$sm.sampe.err.log -o $p/log/$sm.sample.log $p/scripts/$sm.sampe.sh`
+job=`qsub -m abe -M lifeng4209@gmail.com -V -hold_jid $hold_jid -e $p/log/$sm-$lane-$index.sampe.err.log -o $p/log/$sm-$lane-$index.sample.log $p/scripts/$sm-$lane-$index.sampe.sh`
 
 }
 
@@ -161,15 +154,19 @@ if [ ! -f $r2.fastq.gz ]; then
 #exit
 fi
 
-# mkdir Aligned folder
+# mkdir  folder
+if [ ! -d $bam/Project_$SampleProject/Sample_$SampleID ]; then
     mkdir -p $bam/Project_$SampleProject/Sample_$SampleID
     newr1=$bam/Project_$SampleProject/Sample_$SampleID/${SampleID}_${Index}_L00${Lane}_R1_001
     newr2=$bam/Project_$SampleProject/Sample_$SampleID/${SampleID}_${Index}_L00${Lane}_R2_001
     ln -s $r1.fastq.gz $newr1.fastq.gz
     ln -s $r2.fastq.gz $newr2.fastq.gz
+fi
 
 bwa $bam/Project_$SampleProject/Sample_$SampleID $newr1 $newr2 $SampleID $FCID $Lane $Index
 #sleep 10
+
+
 fi # end_of_count -gt 1
 
 done # end_of_while read sample_sheet
@@ -179,4 +176,6 @@ done # end_of_while read sample_sheet
 
 #feed_bwa FlowCellID
 feed_bwa    $1
+
+
 
