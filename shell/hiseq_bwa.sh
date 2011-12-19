@@ -76,7 +76,7 @@ $BWA aln  -t 4 $HG19 $r2.fastq.gz > $r2.sai
 " > $p/scripts/$sm-$lane-$index.aln.sh
 
 
-job=`qsub -m abe -M lifeng4209@gmail.com -pe smp 4 -V -e $p/log/$sm-$lane-$index.aln.err.log -o $p/log/$sm-$lane-$index.aln.log $p/scripts/$sm-$lane-$index.aln.sh`
+job=`qsub -m abe -M lifeng4209@gmail.com -pe smp 4 -e $p/log/$sm-$lane-$index.aln.err.log -o $p/log/$sm-$lane-$index.aln.log $p/scripts/$sm-$lane-$index.aln.sh`
 jobs=`echo $job | awk '{print $3}'`
 
 hold_jid=$jobs
@@ -92,7 +92,7 @@ $SAMTOOLS flagstat $p/$sm-$lane-$index.dedup.bam > $p/$sm-$lane-$index.dedup.bam
 $SAMTOOLS depth $p/$sm-$lane-$index.dedup.bam | perl $GENOMECOVERAGE > $p/$sm-$lane-$index.dedup.bam.genomecoverage
 " > $p/scripts/$sm-$lane-$index.sampe.sh
 
-job=`qsub -m abe -M lifeng4209@gmail.com -V -hold_jid $hold_jid -e $p/log/$sm-$lane-$index.sampe.err.log -o $p/log/$sm-$lane-$index.sample.log $p/scripts/$sm-$lane-$index.sampe.sh`
+job=`qsub -m abe -M lifeng4209@gmail.com -hold_jid $hold_jid -e $p/log/$sm-$lane-$index.sampe.err.log -o $p/log/$sm-$lane-$index.sample.log $p/scripts/$sm-$lane-$index.sampe.sh`
 
 }
 
@@ -154,19 +154,15 @@ if [ ! -f $r2.fastq.gz ]; then
 #exit
 fi
 
-# mkdir  folder
-if [ ! -d $bam/Project_$SampleProject/Sample_$SampleID ]; then
+# mkdir Aligned folder
     mkdir -p $bam/Project_$SampleProject/Sample_$SampleID
     newr1=$bam/Project_$SampleProject/Sample_$SampleID/${SampleID}_${Index}_L00${Lane}_R1_001
     newr2=$bam/Project_$SampleProject/Sample_$SampleID/${SampleID}_${Index}_L00${Lane}_R2_001
     ln -s $r1.fastq.gz $newr1.fastq.gz
     ln -s $r2.fastq.gz $newr2.fastq.gz
-fi
 
 bwa $bam/Project_$SampleProject/Sample_$SampleID $newr1 $newr2 $SampleID $FCID $Lane $Index
 #sleep 10
-
-
 fi # end_of_count -gt 1
 
 done # end_of_while read sample_sheet
@@ -176,6 +172,4 @@ done # end_of_while read sample_sheet
 
 #feed_bwa FlowCellID
 feed_bwa    $1
-
-
 

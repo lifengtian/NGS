@@ -1,3 +1,82 @@
+## sid, the only argument required
+sids=$@
+p=`pwd`
+
+source gatk.sh
+# Resolute queue
+queue="-q  \
+all.q@n-0-1.local,all.q@n-0-10.local,all.q@n-0-11.local,all.q@n-0-12.local,all.q@n-0-13.local,all.q@n-0-14.local,all.q@n-0-15.local,all.q@n-0-16.local,all.q@n-0-17.local,all.q@n-0-18.local,all.q@n-0-19.local,all.q@n-0-2.local,all.q@n-0-20.local,all.q@n-0-21.local,all.q@n-0-22.local,all.q@n-0-23.local,all.q@n-0-24.local,all.q@n-0-25.local,all.q@n-0-26.local,all.q@n-0-27.local,all.q@n-0-28.local,all.q@n-0-29.local,all.q@n-0-3.local,all.q@n-0-30.local,all.q@n-0-31.local,all.q@n-0-4.local,all.q@n-0-5.local,all.q@n-0-6.local,all.q@n-0-7.local,all.q@n-0-8.local,all.q@n-0-9.local \
+    -m abe -M lifeng4209@gmail.com"
+
+mkdir -p $p/scripts
+mkdir -p $p/logs
+mkdir -p $p/BAM
+mkdir -p $p/VCF
+
+for sid in ${sids[*]}; do
+list=`find $HISEQ/BAM  -name "*.dedup.bam" -print | grep Sample_$sid`
+
+I=""
+for i in ${list[*]}; do
+        I=$I" I=$i"
+        del=$del" $i "
+done
+
+echo ---------------------- $sid  from $I to $p ----------------------------
+date
+#echo mergeing $I
+#echo
+#echo delete $del
+#echo
+out=$p/BAM/$sid.bam
+dedup=$p/BAM/$sid.dedup.bam
+M=$p/BAM/$sid.metrics
+
+timestamp=`date +%s`
+
+if [ ! -f $out ]; then
+	echo "
+                $JAVA_BIN -jar $PICARD/MergeSamFiles.jar $I O=$out  VALIDATION_STRINGENCY=SILENT TMP_DIR=$p/temp CREATE_INDEX=true
+                $JAVA_BIN -jar $PICARD/MarkDuplicates.jar REMOVE_DUPLICATES=true I=$out O=$dedup M=$M VALIDATION_STRINGENCY=SILENT TMP_DIR=$p/temp CREATE_INDEX=true ASSUME_SORTED=true
+                $SAMTOOLS flagstat $out > $out.flagstat
+                $SAMTOOLS flagstat $dedup > $dedup.flagstat
+                $SAMTOOLS depth $dedup | perl $GENOMECOVERAGE > $dedup.genomecoverage
+	" > $p/scripts/$sid.merge.$timestamp.sh
+	if [ "$target" != "genome" ]; then
+		echo "
+			$JAVA_BIN -jar $PICARD/CalculateHsMetrics.jar I=$dedup O=$dedup.target.coverage BI=$GATK/bed/$target.picard TI=$GATK/bed/$target.picard TMP_DIR=$p/temp
+		" >> $p/scripts/$sid.merge.$timestamp.sh
+	fi
+
+        job=`qsub $queue -V -e $p/logs/$sid.merge.$timestamp.log -o $p/logs/$sid.merge.$timestamp.log $p/scripts/$sid.merge.$timestamp.sh`
+        hold_jid=`echo $job | awk '{print $3}'`
+	d=`date`
+	echo $d: Merge-Dedup-flagstat $hold_jid
+else
+	
+        echo "$out exist. Will use it."
+
+	echo "
+                $JAVA_BIN -jar $PICARD/MarkDuplicates.jar REMOVE_DUPLICATES=true I=$out O=$dedup M=$M VALIDATION_STRINGENCY=SILENT  TMP_DIR=$p/temp CREATE_INDEX=true ASSUME_SORTED=true
+                $SAMTOOLS flagstat $out > $out.flagstat
+                $SAMTOOLS flagstat $dedup > $dedup.flagstat
+                $SAMTOOLS depth $dedup | perl $GENOMECOVERAGE > $dedup.genomecoverage
+        " > $p/scripts/$sid.merge.$timestamp.sh
+        if [ "$target" != "genome" ]; then
+                echo "
+                        $JAVA_BIN -jar $PICARD/CalculateHsMetrics.jar I=$dedup O=$dedup.target.coverage BI=$GATK/bed/$target.picard TI=$GATK/bed/$target.picard TMP_DIR=$p/temp
+                " >> $p/scripts/$sid.merge.$timestamp.sh
+        fi
+
+        job=`qsub $queue -V -e $p/logs/$sid.merge.$timestamp.log -o $p/logs/$sid.merge.$timestamp.log $p/scripts/$sid.merge.$timestamp.sh`
+        hold_jid=`echo $job | awk '{print $3}'`
+        d=`date`
+        echo $d: Merge-Dedup-flagstat $hold_jid
+
+fi
+sleep 2
+done
+
 # GATK variant caller for whole genome NGS sequencing
 # INPUT : a set of BAM files
 # OUTPUT: vcf
@@ -8,39 +87,29 @@
 
 # step1: cleanup BAMs, produce realigned, recalibrated BAMs
 # step2: call variants using UG -glm BOTH (both SNP and INDEL)
-# step3: collect mapping stats
-# step4: filter variants by standard hard-filtering or VQSR (both SNP and INDEL)
-# step5: generate individual VCFs for each sample
-# step6: Impute with BEAGLE (optional)
+# step3: filter variants by standard hard-filtering or VQSR (both SNP and INDEL)
+# step4: generate individual VCFs for each sample
 
 # to skip a step
 # create a stepx.log in the current dir
 
-
+function gatk_pipeline {
 
 ######################### How to Run the Pipeline #########################
 #
 # modify the following parameters
 ## run folder, default is current dir
-p=`pwd`   
-bam=$p
+bam=$p/BAM
 
 ## reference assembly
 ## genomes were aligned to hg19, all GATK b37 files were converted from "1" to "chr1"
 ref_version=b37
 
-##output prefix
-run=SN1109_0079_2
-
 #### Make sure the bamlist contains the actual sample names in the bam file @RG SM tag!!!!!
-bamlist=(
-SN1109_0079_lane2
-)
 #### samples list
 smlist=${bamlist[*]}
 
 ### Variant Quality Score Recalibration? ###
-VQSR=yes
 
 
 ## Default UnifiedGenotyper options;
@@ -49,7 +118,8 @@ opt="-stand_call_conf 10 -stand_emit_conf 30"
 # SOLiD
 #platform="-dP solid -solid_nocall_strategy PURGE_READ"
 # Illumina
-platform="-dP illumina "
+#platform="-dP illumina "
+
 
 
 ## Please check the storage space
@@ -83,7 +153,7 @@ beagle="/usr/JAVA/latest/bin/JAVA -Djava.io.tmpdir=$temp -Xmx24g -jar $gatk/beag
 
 
 
-chr=(chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY)
+chr=(chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY chrM)
 
 
 if [ "$ref_version" = "hg18" ]; then
@@ -112,19 +182,19 @@ fi
 
 
 #### pipeline output files
-vcf=$p/$run.vcf
-snp=$p/$run.SNP.vcf
-indel=$p/$run.INDEL.vcf
-clusterFile=$p/$run.clusters
-tabl=$p/$run.tabl
-VRR=$p/$run.VRR.report
-snp_recal=$p/$run.snp.recal
-indel_recal=$p/$run.indel.recal
-snp_tranches=$p/$run.snp.tranches
-indel_tranches=$p/$run.indel.tranches
+VCFdir=$p/VCF
+vcf=$VCFdir/$run.vcf
+snp=$VCFdir/$run.SNP.vcf
+indel=$VCFdir/$run.INDEL.vcf
+clusterFile=$VCFdir/$run.clusters
+tabl=$$VCFdir/$run.tabl
+VRR=$VCFdir/$run.VRR.report
+snp_recal=$VCFdir/$run.snp.recal
+indel_recal=$VCFdir/$run.indel.recal
+snp_tranches=$VCFdir/$run.snp.tranches
+indel_tranches=$VCFdir/$run.indel.tranches
 
 #### create folders
-mkdir -p $p/log
 mkdir -p $p/gatkscripts
 
 
@@ -160,9 +230,10 @@ if [ "$bye" = "yes" ]; then
 fi        
 
 #### DON'T forget the ','!
-hold_jid=100000000,
+#hold_jid=100000000,
 
-
+date
+echo $bamlist
 #### Step 1. Cleanup BAM files
 
 if [ ! -f $p/step1.log ]; then
@@ -178,23 +249,23 @@ for i in ${bamlist[*]}; do
 
     
     # remove duplicates
-    $JAVA -jar $PICARD/MarkDuplicates.jar REMOVE_DUPLICATES=true I=$bam/$i.bam O=$p/$i.dedup.bam M=$p/$i.metrics VALIDATION_STRINGENCY=SILENT  CREATE_INDEX=true ASSUME_SORTED=true
+    #$JAVA_BIN -jar $PICARD/MarkDuplicates.jar REMOVE_DUPLICATES=true I=$bam/$i.bam O=$bam/$i.dedup.bam M=$bam/$i.metrics VALIDATION_STRINGENCY=SILENT  CREATE_INDEX=true ASSUME_SORTED=true
     
 
     # Local realignment around Indels
     # 1. Prepare Realign Interval file
     $JAVA_GATK \
         -R $ref \
-        -o $p/$i.dedup.intervals \
-        -I $p/$i.dedup.bam \
+        -o $bam/$i.dedup.intervals \
+        -I $bam/$i.dedup.bam \
 	-T RealignerTargetCreator
 
     # 2. Indel Realigner
     $JAVA_GATK  \
-        -I $p/$i.dedup.bam \
+        -I $bam/$i.dedup.bam \
         -R $ref \
-        -targetIntervals $p/$i.dedup.intervals \
-        -o $p/$i.dedup.indelrealigner.bam \
+        -targetIntervals $bam/$i.dedup.intervals \
+        -o $bam/$i.dedup.indelrealigner.bam \
 	-T IndelRealigner
         
 
@@ -206,29 +277,31 @@ for i in ${bamlist[*]}; do
 
     $JAVA_GATK -R $ref  \
         -knownSites $dbsnp \
-        -I $p/$i.dedup.indelrealigner.bam \
+        -I $bam/$i.dedup.indelrealigner.bam \
         --covariate ReadGroupCovariate \
         --covariate QualityScoreCovariate \
         --covariate CycleCovariate \
         --covariate DinucCovariate \
-        -recalFile $p/$i.dedup.indelrealigner.recal.csv \
+        -recalFile $bam/$i.dedup.indelrealigner.recal.csv \
         $platform \
         -T CountCovariates \
     
 
     # 2. Table Recalibration 
     $JAVA_GATK -R $ref  \
-        -I $p/$i.dedup.indelrealigner.bam \
-        --out $p/$i.dedup.indelrealigner.recal.bam \
-        -recalFile $p/$i.dedup.indelrealigner.recal.csv \
+        -I $bam/$i.dedup.indelrealigner.bam \
+        --out $bam/$i.dedup.indelrealigner.recal.bam \
+        -recalFile $bam/$i.dedup.indelrealigner.recal.csv \
         $platform \
-        -T TableRecalibration \
+        --default_read_group defaultRG \
+	-T TableRecalibration \
 
-    $SAMTOOLS index $p/$i.dedup.indelrealigner.recal.bam
+    $SAMTOOLS index $bam/$i.dedup.indelrealigner.recal.bam
     
     " > $p/gatkscripts/$run.$i.step1.sh
 
-    job=`qsub -e $p/log/$run.$i.step1.log -o $p/log/$run.$i.step1.log $p/gatkscripts/$run.$i.step1.sh`
+    job=`qsub $queue -hold_jid $hold_jid  -e $p/logs/$run.$i.step1.log -o $p/logs/$run.$i.step1.log $p/gatkscripts/$run.$i.step1.sh`
+    sleep 5  
     jobs[$count]=`echo $job | awk '{print $3}'`
     echo [1 BAM cleanup] ${jobs[$count]} submitted
     let count=$count+1
@@ -237,7 +310,7 @@ done
 
 
 for i in ${jobs[*]}; do
-    hold_jid=$hold_jid${i},
+    hold_jid=$hold_jid,${i}
 done
 
 echo "done" >> $p/step1.log
@@ -253,7 +326,7 @@ if [ ! -f $p/step2.log ]; then
 	date >> $p/step2.log
 
 	for i in ${bamlist[*]};do
-    		bams=$bams" -I $p/"$i.dedup.indelrealigner.recal.bam
+    		bams=$bams" -I $bam/"$i.dedup.indelrealigner.recal.bam
 	done
 
 	count=0
@@ -262,8 +335,9 @@ if [ ! -f $p/step2.log ]; then
     		echo "$JAVA_GATK -T UnifiedGenotyper -glm BOTH  -R $ref $bams -o $vcf.$c.vcf $opt  -L $c  -A AlleleBalance -A DepthOfCoverage -A FisherStrand
     		" > $p/gatkscripts/$run.step2.$c.sh
     	
-		job=`qsub -hold_jid $hold_jid -e $p/log/$run.step2.$c.log -o $p/log/$run.step2.$c.log $p/gatkscripts/$run.step2.$c.sh`
-    		ug_jobs[$count]=`echo $job | awk '{print $3}'`
+	job=`qsub $queue -hold_jid $hold_jid -e $p/logs/$run.step2.$c.log -o $p/logs/$run.step2.$c.log $p/gatkscripts/$run.step2.$c.sh`
+	sleep 2    	
+	ug_jobs[$count]=`echo $job | awk '{print $3}'`
     		echo UnifiedGenotyper job for $c: ${ug_jobs[$count]} submitted
     		let count=count+1
 	done
@@ -278,51 +352,12 @@ if [ ! -f $p/step2.log ]; then
 
 fi #end of step2
 
-################################### Step 3 Collect Alignement and Depth of Coverage information  ########################################################
+
+
+
 if [ ! -f $p/step3.log ]; then
-        echo step3 started > $p/step3.log
-        date >> $p/step3.log
-
-for i in ${bamlist[*]}; do
-    echo "
-    # Summary report
-    $JAVA_BIN -jar $PICARD/CollectAlignmentSummaryMetrics.jar I=$p/$i.dedup.indelrealigner.recal.bam O=$p/$i.dedup.indelrealigner.recal.picard.summary R=$ref VALIDATION_STRINGENCY=SILENT
-    $JAVA_BIN  -jar $PICARD/MeanQualityByCycle.jar I=$p/$i.dedup.indelrealigner.recal.bam O=$p/$i.dedup.indelrealigner.recal.meanquality \
-        CHART=$p/$i.dedup.indelrealigner.recal.meanquality.pdf VALIDATION_STRINGENCY=SILENT
-    $SAMTOOLS flagstat $p/$i.dedup.indelrealigner.recal.bam > $p/$i.dedup.indelrealigner.recal.flagstat
-    " > $p/gatkscripts/$run.$i.step3.dedup.summary.sh
-	
-    job=`qsub -hold_jid $hold_jid -o $p/log/$run.$i.step3.dedup.log $p/gatkscripts/$run.$i.step3.dedup.summary.sh`
-    tempjob=`echo $job | awk '{print $3}'`
-    echo [1 SummaryMetrics: $tempjob ] waiting for UnifiedGenotyper: $hold_jid
-                       
-    echo "
-	$JAVA_GATK -T DepthOfCoverage -R $ref -I $p/$i.dedup.indelrealigner.recal.bam -o $p/$i.recal.doc -omitBaseOutput -ct 1 -ct 2 -ct 3 -ct 4 -ct 5 -ct 6 -ct 7 -ct 8
-	" > $p/gatkscripts/$run.$i.step3.recal.doc.sh
-   job=`qsub -hold_jid $hold_jid  -o $p/log/$run.$i.step3.recal.doc.log $p/gatkscripts/$run.$i.step3.recal.doc.sh`
-   tempjob=`echo $job | awk '{print $3}'`
-   echo [1 DepthOfCoverage: $tempjob ] waiting for UnifiedGenotyper: $hold_jid
-	
-   #summarize original BAM statistics
-    echo "
-       $JAVA_BIN -jar $PICARD/CollectAlignmentSummaryMetrics.jar I=$p/$i.bam O=$p/$i.picard.summary R=$ref VALIDATION_STRINGENCY=SILENT
-       $JAVA_BIN -jar $PICARD/MeanQualityByCycle.jar I=$p/$i.bam O=$p/$i.meanquality CHART=$p/$i.meanquality.pdf VALIDATION_STRINGENCY=SILENT
-       $SAMTOOLS flagstat $p/$i.bam > $p/$i.flagstat
-       $JAVA_GATK -T DepthOfCoverage -R $ref -I $p/$i.bam -o $p/$i.doc -omitBaseOutput -ct 1 -ct 2 -ct 3 -ct 4 -ct 5 -ct 6 -ct 7 -ct 8
-       " > $p/gatkscripts/$run.$i.step3.doc.sh
-    job=`qsub -hold_jid $hold_jid -o $p/log/$run.$i.step3.doc.log $p/gatkscripts/$run.$i.step3.doc.sh`
-    tempjob=`echo $job | awk '{print $3}'`
-    echo [1 Summary of Original BAM: $tempjob ] waiting for UnifiedGenotyper: $hold_jid
-
-done
-
-fi # end_of_step3
-
-
-
-if [ ! -f $p/step4.log ]; then
-	echo step4 started > $p/step4.log
-	date >> $p/step4.log
+	echo step3 started > $p/step3.log
+	date >> $p/step3.log
 
 ############################### Step 4 combine Variants, Annotation, VQSR recalibration ###############################################
 	for c in ${chr[*]}; do
@@ -349,7 +384,7 @@ if [ ! -f $p/step4.log ]; then
 			-env  \
 			-selectType INDEL 
 
-	" > $p/gatkscripts/$run.step4.sh
+	" > $p/gatkscripts/$run.step3.sh
 
 
 	### for whole exome, we have several choices here
@@ -379,7 +414,7 @@ if [ ! -f $p/step4.log ]; then
 			-ef
 
 
-	" >> $p/gatkscripts/$run.step4.sh
+	" >> $p/gatkscripts/$run.step3.sh
 
 	### Indel
 	### DATA_TYPE_SPECIFIC_FILTERS should be "QD < 2.0", "ReadPosRankSum < -20.0", "InbreedingCoeff < -0.8", "FS > 200.0".
@@ -402,7 +437,7 @@ if [ ! -f $p/step4.log ]; then
         	-ef
 
 
-	" >> $p/gatkscripts/$run.step4.sh
+	" >> $p/gatkscripts/$run.step3.sh
 
 	if [ "$VQSR" = "yes" ]; then
 		echo "
@@ -425,7 +460,7 @@ if [ ! -f $p/step4.log ]; then
    			-tranchesFile $snp_tranches \
    			-Rscript $Rscript \
    			-resources $git/public/R \
-   			-rscriptFile $p/rscript.snp.r \
+   			-rscriptFile $p/VCF/rscript.snp.r \
 
    		$JAVA_GATK \
    			-T ApplyRecalibration \
@@ -448,7 +483,7 @@ if [ ! -f $p/step4.log ]; then
    			-tranchesFile $indel_tranches \
    			-Rscript $Rscript \
    			-resources $Rresources \
-   			-rscriptFile $p/rscript.indel.r \
+   			-rscriptFile $p/VCF/rscript.indel.r \
 
    		$JAVA_GATK \
    			-T ApplyRecalibration \
@@ -459,120 +494,56 @@ if [ ! -f $p/step4.log ]; then
    			-recalFile $indel_recal \
    			-o $indel.vqsr.vcf
 
-		" >> $p/gatkscripts/$run.step4.sh
+		" >> $p/gatkscripts/$run.step3.sh
 	fi
 
-	job=`qsub -hold_jid $hold_jid -e $p/log/$run.step4.log -o $p/log/$run.step4.log $p/gatkscripts/$run.step4.sh`
-	hold_jid=`echo $job | awk '{print $3}'`
+	job=`qsub $queue -hold_jid $hold_jid -e $p/logs/$run.step3.log -o $p/logs/$run.step3.log $p/gatkscripts/$run.step3.sh`
+	filter_jid=`echo $job | awk '{print $3}'`
 	echo [3 SelectVariants: $filter_job ] waiting for UnifiedGenotyper: $hold_jid 
+    hold_jid=$filter_jid
 
-	echo step4 ended >> $p/step4.log
-	date >> $p/step4.log
+	echo step3 ended >> $p/step3.log
+	date >> $p/step3.log
 fi #end_of_step4
 
 
 
 
 
-######################################### step 5 #########################################
-if [ ! -f $p/step5.log ]; then
-echo step5 started  > $p/step5.log
-date >> $p/step5.log
+######################################### step 4 #########################################
+if [ ! -f $p/step4.log ]; then
+echo step4 started  > $p/step4.log
+date >> $p/step4.log
 
 
 #### Produce individual VCFs  
 for i in ${smlist[*]};do
 
     echo "
-    	$JAVA_GATK -T SelectVariants -sn $i -R $ref -V $snp.gatkstandard.vcf -o $p/$i.gatkstandard.snp.vcf  -env -ef 
-    	$JAVA_GATK -T SelectVariants -sn $i -R $ref -V $indel.gatkstandard.vcf -o $p/$i.gatkstandard.indel.vcf  -env -ef 
-    	$JAVA_GATK -T VariantEval  -eval $p/$i.gatkstandard.snp.vcf -D $dbsnp  -R $ref -o $p/$i.gatkstandard.report
-    "     > $p/gatkscripts/$run.step5.VariantEval.$i.sh
+    	$JAVA_GATK -T SelectVariants -sn $i -R $ref -V $snp.gatkstandard.vcf -o $p/VCF/$i.gatkstandard.snp.vcf  -env -ef 
+    	$JAVA_GATK -T SelectVariants -sn $i -R $ref -V $indel.gatkstandard.vcf -o $p/VCF/$i.gatkstandard.indel.vcf  -env -ef 
+    	$JAVA_GATK -T VariantEval  -eval $p/$i.gatkstandard.snp.vcf -D $dbsnp  -R $ref -o $p/VCF/$i.gatkstandard.report
+    "     > $p/gatkscripts/$run.step4.VariantEval.$i.sh
 
    if [ "$VQSR" = "yes" ]; then
         echo "
-        $JAVA_GATK -T SelectVariants -sn $i -R $ref -V $snp.vqsr.vcf -o $p/$i.gatkvqsr.snp.vcf  -env -ef 
-       	$JAVA_GATK -T VariantEval  -eval $p/$i.gatkvqsr.snp.vcf -comp $p/$i.gatkstandard.snp.vcf -D $dbsnp  -R $ref -o $p/$i.gatkvqsr.report
-    	"     >> $p/gatkscripts/$run.step5.VariantEval.$i.sh
+        $JAVA_GATK -T SelectVariants -sn $i -R $ref -V $snp.vqsr.vcf -o $p/VCF/$i.gatkvqsr.snp.vcf  -env -ef 
+       	$JAVA_GATK -T VariantEval  -eval $p/VCF/$i.gatkvqsr.snp.vcf -comp $p/VCF/$i.gatkstandard.snp.vcf -D $dbsnp  -R $ref -o $p/VCF/$i.gatkvqsr.report
+    	"     >> $p/gatkscripts/$run.step4.VariantEval.$i.sh
 		
 	fi
-	job=`qsub -hold_jid $hold_jid -e $p/log/$run.step5.VariantEval.$i.log -o $p/log/$run.step5.VariantEval.$i.log $p/gatkscripts/$run.step5.VariantEval.$i.sh`
+	job=`qsub $queue -hold_jid $hold_jid -e $p/logs/$run.step4.VariantEval.$i.log -o $p/logs/$run.step4.VariantEval.$i.log $p/gatkscripts/$run.step4.VariantEval.$i.sh`
 	tempjob=`echo $job | awk '{print $3}'`
-    echo [3 VariantEval: $tempjob]  waiting for : $filter_job 
+    echo [3 VariantEval: $tempjob]  waiting for : $hold_job 
 
     
 
 done
 
-echo step5 ended >> $p/step5.log
-date >> $p/step5.log
-fi # end of step5
+echo step4 ended >> $p/step4.log
+date >> $p/step4.log
+fi # end of step4 
 
+}
 
-if [ ! -f $p/step6.log ]; then
-echo step6 started  > $p/step6.log 
-date >> $p/step6.log
-
-###################################### step 5: Impute with Beagle #############################################
-
-echo "
-    date
-    $JAVA_GATK   -R $ref -T ProduceBeagleInput  -V $snp.gatkstandard.vcf -o $p/$run.beagle
-
-    $beagle like=$p/$run.beagle out=
-
-    gunzip -c $p/$run.beagle.dose.gz > $p/$run.beagle.dose
-    gunzip -c $p/$run.beagle.gprobs.gz > $p/$run.beagle.gprobs
-    gunzip -c $p/$run.beagle.phased.gz > $p/$run.beagle.phased
-
-    $JAVA_GATK -T BeagleOutputToVCF \
-        -R $ref \
-		-V $recal.filtered.vcf \
-        -beagleR2 $p/$run.beagle.r2 \
-        -beaglePhased $p/$run.beagle.phased \
-        -beagleProbs $p/$run.beagle.gprobs \
-        --out $p/$run.beagle.vcf
-    
-   date
-" > $p/gatkscripts/$run.step5.beagle.sh
-
-job=`qsub -hold_jid $vqsr_job -e $p/log/$run.step5.beagle.log -o $p/log/$run.step5.beagle.log  $p/gatkscripts/$run.step5.beagle.sh` 
-beagle_job=`echo $job | awk '{print $3}'`
-echo [4 Beagle imputation: $beagle_job]  waiting for VQSR: $vqsr_job 
-
-#### Produce individual VCFs from Beagle output
-#### Compare imputed and non-imputed results against each other and dbSNP
-for i in ${smlist[*]};do
-    echo "
-    $JAVA_GATK -T SelectVariants \
-	-sn $i \
-	-R $ref \
-	-V $p/$run.beagle.vcf \
-	-o $p/$i.beagle.vcf  \
-	-env \
-	-ef 
-  
-    $JAVA_GATK -T VariantEval  \
-	-eval $p/$i.recal.filtered.vcf \
-	-comp $p/$i.beagle.vcf \
-	-D $dbsnp  \
-	-R $ref \
-	-o $p/$i.normal_vs_beagle.gatkreport 
-    
-    $JAVA_GATK -T VariantEval  \
-	-eval $p/$i.beagle.vcf \
-	-D $dbsnp  \
-	-R $ref \
-	-o $p/$i.beagle.gatkreport
-    "     > $p/gatkscripts/$run.$i.beagle.VariantEval.sh
-
-    job=`qsub -e $p/log/$run.$i.beagle.VariantEval.log -o $p/log/$run.$i.beagle.VariantEval.log -hold_jid $beagle_job $p/gatkscripts/$run.$i.beagle.VariantEval.sh`
-	tempjob=`echo $job | awk '{print $3}'`
-	echo [4 VariantEval: $tempjob] waiting for Beagle Imputation: $beagle_job
-done
-
-
-echo step6 ended >> $p/step6.log
-date >> $p/step6.log
-fi # end of step6
-
+gatk_pipeline
