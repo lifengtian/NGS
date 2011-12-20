@@ -87,9 +87,9 @@ job=`qsub $queue -V -e $p/log/$sm-$lane-$index.target_coverage.err.log -o $p/log
 
 function feed_bwa {
 flow_cell_id=$1
-sample_sheet=$HISEQ_ANALYSIS/SampleSheet/$flow_cell_id.csv
-fastq=$HISEQ_ANALYSIS/FASTQ/$flow_cell_id
-bam=$HISEQ_ANALYSIS/BAM/$flow_cell_id
+sample_sheet=$HISEQ/SampleSheet/$flow_cell_id.csv
+fastq=$HISEQ/FASTQ/$flow_cell_id
+bam=$HISEQ/BAM/$flow_cell_id
 
 
 

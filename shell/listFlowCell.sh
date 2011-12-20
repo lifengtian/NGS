@@ -1,7 +1,7 @@
 
 source setup.sh
 
-list=`ls $HISEQ_ANALYSIS/FlowCellInfo/*.csv`
+list=`ls $HISEQ/FlowCellInfo/*.csv`
 sum=0
 for i in ${list[*]}; do
 	echo $i
