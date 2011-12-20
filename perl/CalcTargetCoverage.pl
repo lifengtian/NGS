@@ -93,7 +93,7 @@ foreach my $cov (@ARGV) {
 	my ( $total_mapped, @t ) = split/\s+/, <F3>;
 	my ( $after_dup, @t ) = split/\s+/, <F2>;
 	<F2>;
-	my ( $after_dup_mapped, @t _) = split/\s+/, <F2>;
+	my ( $after_dup_mapped, @t ) = split/\s+/, <F2>;
 
     $line = <F>;
     my @result = split /\s+/, $line;
