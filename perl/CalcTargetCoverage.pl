@@ -121,7 +121,7 @@ foreach my $cov (@ARGV) {
         print O "Duplicate_reads\t", $total - $after_dup,    "\n";
         print O "Total_mapped_reads\t",    $total_mapped, "\n";
         print O "Duplicate_reads\/Mapped_reads\t",
-          sprintf( "%.2f", ($total - $after_dup) / $mapped );
+          sprintf( "%.2f", ($total - $after_dup) / $total_mapped );
         print O "Mapped_reads_after_dup\t",    $after_dup_mapped, "\n";
 
     }
