@@ -59,9 +59,9 @@ my $paste_file_names;
 
 foreach my $cov (@ARGV) {
 
-    open F,  $cov . "dedup.bam.target_coverage" || die "Error open $cov";
-    open F2, $cov . "dedup.bam.flagstat"        || die "Error open $cov";
-    open F3, $cov . "sorted.bam.flagstat"        || die "Error open $cov";
+    open F,  $cov . ".dedup.bam.target_coverage" || die "Error open $cov";
+    open F2, $cov . ".dedup.bam.flagstat"        || die "Error open $cov";
+    open F3, $cov . ".sorted.bam.flagstat"        || die "Error open $cov";
 
     open O, ">" . $cov . '.out';
 
@@ -132,8 +132,10 @@ foreach my $cov (@ARGV) {
     close F;
     close O;
     close F2;
+	close F3;
 
     $header_printed = 1;
 }
+
 `paste $paste_file_names > target.coverage`;
 
