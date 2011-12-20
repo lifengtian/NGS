@@ -55,10 +55,13 @@ SAMPLE	LIBRARY	READ_GROUP	BAIT_SET	GENOME_SIZE	BAIT_TERRITORY	TARGET_TERRITORY	B
 my $header_printed = 0;
 my $paste_file_names;
 
+# input is like /path/SID4695105858-2-TGACCA
+
 foreach my $cov (@ARGV) {
 
-    open F,  $cov . '.target_coverage' || die "Error open $cov";
-    open F2, $cov . '.flagstat'        || die "Error open $cov";
+    open F,  $cov . "dedup.bam.target_coverage" || die "Error open $cov";
+    open F2, $cov . "dedup.bam.flagstat"        || die "Error open $cov";
+    open F3, $cov . "sorted.bam.flagstat"        || die "Error open $cov";
 
     open O, ">" . $cov . '.out';
 
@@ -77,17 +80,26 @@ foreach my $cov (@ARGV) {
     }
 
 ## process flagstat
-    <F2>;
-    my $line2 = <F2>;
-    my $line3 = <F2>;
-    my ( $dup,    @t )  = split /\s+/, $line2;
-    my ( $mapped, @t2 ) = split /\s+/, $line3;
+# since I choose to remove all the dups, have to change this code
+#    <F2>;
+#    my $line2 = <F2>;
+#    my $line3 = <F2>;
+#    my ( $dup,    @t )  = split /\s+/, $line2;
+#    my ( $mapped, @t2 ) = split /\s+/, $line3;
+
+# to
+	my ( $total , @t) = split/\s+/, <F3>;
+	my ( $after_dup, @t ) = split/\s+/, <F2>;
+	# skip line 2 of dedupped file
+	<F2>;
+	my ( $mapped, @t ) = split/\s+/, <F2>;
 
     $line = <F>;
     my @result = split /\s+/, $line;
-    $cov =~ /(.*?).dedup/;
-    $result[0] = $1;
-    foreach ( 2, 4, 6, 8, 15, 17, 19, 24, 28, 31, 32 ) {
+    #$cov =~ /(.*?).dedup/;
+    #$result[0] = $1;
+    $result[0] = $cov;
+	foreach ( 2, 4, 6, 8, 15, 17, 19, 24, 28, 31, 32 ) {
         if ( !$header_printed ) {
             print O $header[$_], "\t";
         }
@@ -104,10 +116,10 @@ foreach my $cov (@ARGV) {
         }
     }
     if ( !$header_printed ) {
-        print O "Duplicate_reads\t", $dup,    "\n";
+        print O "Duplicate_reads\t", $total - $after_dup,    "\n";
         print O "Mapped_reads\t",    $mapped, "\n";
         print O "Duplicate_reads\/Mapped_reads\t",
-          sprintf( "%.2f", $dup / $mapped );
+          sprintf( "%.2f", ($total - $after_dup) / $mapped );
 
     }
     else {
