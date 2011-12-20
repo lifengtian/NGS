@@ -119,7 +119,7 @@ if [ ! $Index ]; then
 Index="NoIndex"
 fi
 
-bwa $bam/Project_$SampleProject/Sample_$SampleID $SampleID $FCID $Lane $Index
+calc_coverage $bam/Project_$SampleProject/Sample_$SampleID $SampleID $FCID $Lane $Index
 #sleep 10
 fi # end_of_count -gt 1
 
