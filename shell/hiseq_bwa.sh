@@ -1,5 +1,5 @@
 
-source setup.sh
+source $HISEQ/NGS/shell/setup.sh
 
 ###### FUNCTION    check_files ######
 # check the locations of required files
@@ -77,7 +77,7 @@ $BWA aln  -t 4 $HG19 $r2.fastq.gz > $r2.sai
 " > $p/scripts/$sm-$lane-$index.aln.sh
 
 
-job=`qsub -m abe -M lifeng4209@gmail.com -pe smp 4 -e $p/log/$sm-$lane-$index.aln.err.log -o $p/log/$sm-$lane-$index.aln.log $p/scripts/$sm-$lane-$index.aln.sh`
+job=`qsub $queue -pe smp 4 -e $p/log/$sm-$lane-$index.aln.err.log -o $p/log/$sm-$lane-$index.aln.log $p/scripts/$sm-$lane-$index.aln.sh`
 jobs=`echo $job | awk '{print $3}'`
 
 hold_jid=$jobs
@@ -88,12 +88,13 @@ $JAVA_BIN -jar $PICARD/SortSam.jar I=$p/$sm-$lane-$index.bam O=$p/$sm-$lane-$ind
 $SAMTOOLS flagstat $p/$sm-$lane-$index.sorted.bam > $p/$sm-$lane-$index.sorted.bam.flagstat
 $SAMTOOLS depth $p/$sm-$lane-$index.sorted.bam | perl $GENOMECOVERAGE > $p/$sm-$lane-$index.sorted.bam.genomecoverage
 $FASTQC/fastqc -o $p/QCreport  $p/$sm-$lane-$index.sorted.bam
+
 $JAVA_BIN -jar $PICARD/MarkDuplicates.jar I=$p/$sm-$lane-$index.sorted.bam O=$p/$sm-$lane-$index.dedup.bam M=$p/$sm-$lane-$index.metric VALIDATION_STRINGENCY=SILENT TMP_DIR=$p/temp CREATE_INDEX=true REMOVE_DUPLICATES=true
 $SAMTOOLS flagstat $p/$sm-$lane-$index.dedup.bam > $p/$sm-$lane-$index.dedup.bam.flagstat
 $SAMTOOLS depth $p/$sm-$lane-$index.dedup.bam | perl $GENOMECOVERAGE > $p/$sm-$lane-$index.dedup.bam.genomecoverage
 " > $p/scripts/$sm-$lane-$index.sampe.sh
 
-job=`qsub -m abe -M lifeng4209@gmail.com -hold_jid $hold_jid -e $p/log/$sm-$lane-$index.sampe.err.log -o $p/log/$sm-$lane-$index.sample.log $p/scripts/$sm-$lane-$index.sampe.sh`
+job=`qsub $queue -hold_jid $hold_jid -e $p/log/$sm-$lane-$index.sampe.err.log -o $p/log/$sm-$lane-$index.sample.log $p/scripts/$sm-$lane-$index.sampe.sh`
 
 }
 

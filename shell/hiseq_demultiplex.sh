@@ -1,9 +1,9 @@
 #!/bin/bash
 
 
-USAGE="bash demultiplex.sh [FlowCellID]"
+USAGE="demultiplex.sh [FlowCellID]"
 
-source setup.sh
+source $HISEQ/setup.sh
 
 
 FlowCellID=$1
@@ -41,5 +41,5 @@ $BclToFastq --fastq-cluster-count 0 --input-dir  $input_dir  --output-dir $outpu
 cd $output_dir
 nohup make -j 4  
 " > $HISEQ_ANALYSIS/FASTQ/scripts/$FlowCellID.sh
-qsub -m bae -M lifeng4209@gmail.com -V -e $HISEQ_ANALYSIS/logs/$FlowCellID.log -o $HISEQ_ANALYSIS/logs/$FlowCellID.log $HISEQ_ANALYSIS/FASTQ/scripts/$FlowCellID.sh
+qsub $queue -V -e $HISEQ_ANALYSIS/logs/$FlowCellID.log -o $HISEQ_ANALYSIS/logs/$FlowCellID.log $HISEQ_ANALYSIS/FASTQ/scripts/$FlowCellID.sh
 

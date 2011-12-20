@@ -1,9 +1,12 @@
+#!/bin/sh
+
 # calculate target coverage 
 
-source setup.sh
+source $HISEQ/NGS/shell/setup.sh
 
 Target=$GATK/bed/SureSelect50mbclean
-Target_bed=$TARGET.bed
+Target_bed=$Target.bed
+Target_picard=$Target.picard
 
 ###### FUNCTION    check_files ######
 # check the locations of required files
@@ -62,15 +65,17 @@ if [ ! -f $p/$sm-$lane-$index.sorted.bam ]; then
 fi
 
 echo "
-$JAVA_BIN -jar $PICARD/CalculateHsMetrics.jar I=$p/$sm-$lane-$index.dedup.bam O=$p/$sm-$lane-$index.dedup.bam.target_coverage BI=$cov/SureSelect50mbclean.picard TI=$cov/SureSelect50mbclean.picard TMP_DIR=/scratch/local
-mkdir $p/QCreport
+#$JAVA_BIN -jar $PICARD/CalculateHsMetrics.jar I=$p/$sm-$lane-$index.dedup.bam O=$p/$sm-$lane-$index.dedup.bam.target_coverage BI=$Target_picard TI=$Target_picard TMP_DIR=$p/temp VALIDATION_STRINGENCY=SILENT
+mkdir -p $p/QCreport
+
 $SAMTOOLS depth -b $Target_bed $p/$sm-$lane-$index.sorted.bam | perl $GENOMECOVERAGE > $p/$sm-$lane-$index.sorted.bam.target_depth
 $SAMTOOLS depth -b $Target_bed $p/$sm-$lane-$index.dedup.bam | perl $GENOMECOVERAGE > $p/$sm-$lane-$index.dedup.bam.target_depth
-$HISEQ/NGS/perl/CalcTargetCoverage.pl $p/$sm-$lane-$index.dedup.bam 
+$HISEQ/NGS/perl/CalcTargetCoverage.pl $p/$sm-$lane-$index
+
 /mnt/isilon/cag/ngs/hiseq/gatk/FastQC/fastqc -o $p/QCreport $p/$sm-$lane-$index.dedup.bam
 " > $p/scripts/$sm-$lane-$index.target_coverage.sh
 
-#job=`qsub $queue -V -e $p/log/$sm-$lane-$index.target_coverage.err.log -o $p/log/$sm-$lane-$index.target_coverage.log $p/scripts/$sm-$lane-$index.target_coverage.sh`
+job=`qsub $queue -V -e $p/log/$sm-$lane-$index.target_coverage.err.log -o $p/log/$sm-$lane-$index.target_coverage.log $p/scripts/$sm-$lane-$index.target_coverage.sh`
 
 }
 
@@ -88,16 +93,7 @@ bam=$HISEQ_ANALYSIS/BAM/$flow_cell_id
 
 
 
-#check files
 check_files
-
-if [ ! -d $bam ]; then
-    mkdir -p $bam
-else
-#
-	echo "$bam exist. Exit"
-	exit
-fi
 
 # parse sample_sheet
 #FCID,Lane,SampleID,SampleRef,Index,Description,Control,Recipe,Operator,SampleProject
