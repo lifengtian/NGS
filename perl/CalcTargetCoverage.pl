@@ -58,7 +58,23 @@ my $paste_file_names;
 
 # input is like /path/SID4695105858-2-TGACCA
 
+
 foreach my $cov (@ARGV) {
+	my $sid;
+	my $lane;
+	my $index;
+
+	#parse SID, lane, index
+	if ( $cov=~/(SID\d+)-(\d+)-(\w+)$/ ) {
+		$sid = $1;
+		$lane = $2;
+		$index = $3;
+	} else {
+		die "error parsing $cov\n";
+	}
+	
+
+
 
     open F,  $cov . ".dedup.bam.target_coverage" || die "Error open $cov";
     open F2, $cov . ".dedup.bam.flagstat"        || die "Error open $cov";
@@ -125,6 +141,9 @@ foreach my $cov (@ARGV) {
         print O "Duplicate_reads\/Total_mapped_reads\t",
           sprintf( "%.2f", ( $total - $after_dup ) / $total_mapped ), "\n";
         print O "Mapped_reads_after_dup\t", $after_dup_mapped, "\n";
+	print O "SID\t", $sid,"\n";
+	print O "Lane\t", $lane,"\n";
+	print O "Index\t", $index, "\n";
 
     }
     else {
@@ -134,7 +153,9 @@ foreach my $cov (@ARGV) {
         print O sprintf( "%.2f", ( $total - $after_dup ) / $total_mapped ),
           "\n";
         print O $after_dup_mapped, "\n";
-
+	print O $sid,"\n";
+	print O $lane, "\n";
+	print O $index, "\n";
     }
 
     close F;
