@@ -89,10 +89,11 @@ foreach my $cov (@ARGV) {
 
 # to
 	my ( $total , @t) = split/\s+/, <F3>;
+	<F3>;
+	my ( $total_mapped, @t ) = split/\s+/, <F3>;
 	my ( $after_dup, @t ) = split/\s+/, <F2>;
-	# skip line 2 of dedupped file
 	<F2>;
-	my ( $mapped, @t ) = split/\s+/, <F2>;
+	my ( $after_dup_mapped, @t _) = split/\s+/, <F2>;
 
     $line = <F>;
     my @result = split /\s+/, $line;
@@ -116,10 +117,12 @@ foreach my $cov (@ARGV) {
         }
     }
     if ( !$header_printed ) {
+	print O "Total_reads\t", $total, "\n";
         print O "Duplicate_reads\t", $total - $after_dup,    "\n";
-        print O "Mapped_reads\t",    $mapped, "\n";
+        print O "Total_mapped_reads\t",    $total_mapped, "\n";
         print O "Duplicate_reads\/Mapped_reads\t",
           sprintf( "%.2f", ($total - $after_dup) / $mapped );
+        print O "Mapped_reads_after_dup\t",    $after_dup_mapped, "\n";
 
     }
     else {
