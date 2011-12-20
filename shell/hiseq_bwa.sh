@@ -67,6 +67,7 @@ index=$7
 mkdir -p $p/log
 mkdir -p $p/scripts
 mkdir -p $p/temp
+mkdir -p $p/QCreport
 
 #align
 timestamp=`date +%s`
@@ -86,7 +87,7 @@ $BWA sampe -r \"@RG\\tID:$fid-$lane-$index-$sm\\tSM:$sm\" $HG19 $r1.sai $r2.sai 
 $JAVA_BIN -jar $PICARD/SortSam.jar I=$p/$sm-$lane-$index.bam O=$p/$sm-$lane-$index.sorted.bam SO=coordinate VALIDATION_STRINGENCY=SILENT TMP_DIR=$p/temp CREATE_INDEX=true
 $SAMTOOLS flagstat $p/$sm-$lane-$index.sorted.bam > $p/$sm-$lane-$index.sorted.bam.flagstat
 $SAMTOOLS depth $p/$sm-$lane-$index.sorted.bam | perl $GENOMECOVERAGE > $p/$sm-$lane-$index.sorted.bam.genomecoverage
-$FASTQC -o QCreport -f $p/$sm-$lane-$index.sorted.bam
+$FASTQC/fastqc -o $p/QCreport  $p/$sm-$lane-$index.sorted.bam
 $JAVA_BIN -jar $PICARD/MarkDuplicates.jar I=$p/$sm-$lane-$index.sorted.bam O=$p/$sm-$lane-$index.dedup.bam M=$p/$sm-$lane-$index.metric VALIDATION_STRINGENCY=SILENT TMP_DIR=$p/temp CREATE_INDEX=true REMOVE_DUPLICATES=true
 $SAMTOOLS flagstat $p/$sm-$lane-$index.dedup.bam > $p/$sm-$lane-$index.dedup.bam.flagstat
 $SAMTOOLS depth $p/$sm-$lane-$index.dedup.bam | perl $GENOMECOVERAGE > $p/$sm-$lane-$index.dedup.bam.genomecoverage

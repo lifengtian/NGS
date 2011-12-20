@@ -63,10 +63,11 @@ fi
 
 echo "
 $JAVA_BIN -jar $PICARD/CalculateHsMetrics.jar I=$p/$sm-$lane-$index.dedup.bam O=$p/$sm-$lane-$index.dedup.bam.target_coverage BI=$cov/SureSelect50mbclean.picard TI=$cov/SureSelect50mbclean.picard TMP_DIR=/scratch/local
-
+mkdir $p/QCreport
 $SAMTOOLS depth -b $Target_bed $p/$sm-$lane-$index.sorted.bam | perl $GENOMECOVERAGE > $p/$sm-$lane-$index.sorted.bam.target_depth
 $SAMTOOLS depth -b $Target_bed $p/$sm-$lane-$index.dedup.bam | perl $GENOMECOVERAGE > $p/$sm-$lane-$index.dedup.bam.target_depth
 $HISEQ/NGS/perl/CalcTargetCoverage.pl $p/$sm-$lane-$index.dedup.bam 
+/mnt/isilon/cag/ngs/hiseq/gatk/FastQC/fastqc -o $p/QCreport $p/$sm-$lane-$index.dedup.bam
 " > $p/scripts/$sm-$lane-$index.target_coverage.sh
 
 #job=`qsub $queue -V -e $p/log/$sm-$lane-$index.target_coverage.err.log -o $p/log/$sm-$lane-$index.target_coverage.log $p/scripts/$sm-$lane-$index.target_coverage.sh`
