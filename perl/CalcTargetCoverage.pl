@@ -1,3 +1,4 @@
+#!/usr/bin/perl
 
 =head1 note
 ## net.sf.picard.metrics.StringHeader
@@ -61,7 +62,7 @@ foreach my $cov (@ARGV) {
 
     open F,  $cov . ".dedup.bam.target_coverage" || die "Error open $cov";
     open F2, $cov . ".dedup.bam.flagstat"        || die "Error open $cov";
-    open F3, $cov . ".sorted.bam.flagstat"        || die "Error open $cov";
+    open F3, $cov . ".sorted.bam.flagstat"       || die "Error open $cov";
 
     open O, ">" . $cov . '.out';
 
@@ -80,27 +81,28 @@ foreach my $cov (@ARGV) {
     }
 
 ## process flagstat
-# since I choose to remove all the dups, have to change this code
-#    <F2>;
-#    my $line2 = <F2>;
-#    my $line3 = <F2>;
-#    my ( $dup,    @t )  = split /\s+/, $line2;
-#    my ( $mapped, @t2 ) = split /\s+/, $line3;
+    # since I choose to remove all the dups, have to change this code
+    #    <F2>;
+    #    my $line2 = <F2>;
+    #    my $line3 = <F2>;
+    #    my ( $dup,    @t )  = split /\s+/, $line2;
+    #    my ( $mapped, @t2 ) = split /\s+/, $line3;
 
-# to
-	my ( $total , @t) = split/\s+/, <F3>;
-	<F3>;
-	my ( $total_mapped, @t ) = split/\s+/, <F3>;
-	my ( $after_dup, @t ) = split/\s+/, <F2>;
-	<F2>;
-	my ( $after_dup_mapped, @t ) = split/\s+/, <F2>;
+    # to
+    my ( $total, @t ) = split /\s+/, <F3>;
+    <F3>;
+    my ( $total_mapped, @t ) = split /\s+/, <F3>;
+    my ( $after_dup,    @t ) = split /\s+/, <F2>;
+    <F2>;
+    my ( $after_dup_mapped, @t ) = split /\s+/, <F2>;
 
     $line = <F>;
     my @result = split /\s+/, $line;
+
     #$cov =~ /(.*?).dedup/;
     #$result[0] = $1;
     $result[0] = $cov;
-	foreach ( 2, 4, 6, 8, 15, 17, 19, 24, 28, 31, 32 ) {
+    foreach ( 2, 4, 6, 8, 15, 17, 19, 24, 28, 31, 32 ) {
         if ( !$header_printed ) {
             print O $header[$_], "\t";
         }
@@ -117,25 +119,28 @@ foreach my $cov (@ARGV) {
         }
     }
     if ( !$header_printed ) {
-	print O "Total_reads\t", $total, "\n";
-        print O "Duplicate_reads\t", $total - $after_dup,    "\n";
-        print O "Total_mapped_reads\t",    $total_mapped, "\n";
+        print O "Total_reads\t", $total, "\n";
+        print O "Duplicate_reads\t", $total - $after_dup, "\n";
+        print O "Total_mapped_reads\t", $total_mapped, "\n";
         print O "Duplicate_reads\/Total_mapped_reads\t",
-          sprintf( "%.2f", ($total - $after_dup) / $total_mapped ), "\n";
-        print O "Mapped_reads_after_dup\t",    $after_dup_mapped, "\n";
+          sprintf( "%.2f", ( $total - $after_dup ) / $total_mapped ), "\n";
+        print O "Mapped_reads_after_dup\t", $after_dup_mapped, "\n";
 
     }
     else {
-        print O $dup,    "\n";
-        print O $mapped, "\n";
-        print O sprintf( "%.2f", $dup / $mapped );
+        print O $total, "\n";
+        print O $total - $after_dup, "\n";
+        print O $total_mapped, "\n";
+        print O sprintf( "%.2f", ( $total - $after_dup ) / $total_mapped ),
+          "\n";
+        print O $after_dup_mapped, "\n";
 
     }
 
     close F;
     close O;
     close F2;
-	close F3;
+    close F3;
 
     $header_printed = 1;
 }
