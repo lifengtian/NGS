@@ -3,7 +3,7 @@
 
 USAGE="demultiplex.sh [FlowCellID]"
 
-source $HISEQ/setup.sh
+source $HISEQ/NGS/shell/setup.sh
 
 
 FlowCellID=$1
