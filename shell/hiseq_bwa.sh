@@ -1,3 +1,4 @@
+#!/bin/sh
 
 source $HISEQ/NGS/shell/setup.sh
 

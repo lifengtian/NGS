@@ -1,3 +1,4 @@
+
 function gatk_pipeline {
 
 # GATK variant caller for whole genome NGS sequencing
@@ -467,4 +468,38 @@ date >> $p/step4.log
 fi # end of step4 
 
 }
+
+
+
+###### FUNCTION    check_files ######
+# check the locations of required files
+#
+function check_files {
+
+check_list=( $GENOMECOVERAGE \
+             $SAMTOOLS \
+             $BWA \
+             $HG19 \
+             $JAVA_BIN \
+             $FASTQC/fastqc \
+             $PICARD/MarkDuplicates.jar
+)
+
+bye='no'
+for i in ${check_list[*]}; do
+if [ ! -f $i ]; then
+    echo $i not exist
+        bye='yes'
+fi
+done
+
+echo bye is $bye
+
+if [ "$bye" = "yes" ]; then
+        echo See you next time
+        exit
+fi
+
+}
+
 
