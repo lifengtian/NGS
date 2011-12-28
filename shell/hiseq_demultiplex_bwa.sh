@@ -18,6 +18,11 @@ platform=' -dP illumina '
 ref=$HG19
 dbsnp=$GATK/b37/dbsnp_132.b37.vcf
 
+Target=$GATK/bed/SureSelect50mbclean
+Target_bed=$Target.bed
+Target_picard=$Target.picard
+
+
 ####### FUNCTION demultiplex ############
 function demultiplex {
 
@@ -110,8 +115,8 @@ mkdir -p $p/QCreport
 #align
 timestamp=`date +%s`
 echo "
-$BWA aln  -t 4 $HG19 $r1.fastq.gz > $r1.sai
-$BWA aln  -t 4 $HG19 $r2.fastq.gz > $r2.sai
+$BWA aln -n 3 -t 4 $HG19 $r1.fastq.gz > $r1.sai
+$BWA aln -n 3 -t 4 $HG19 $r2.fastq.gz > $r2.sai
 " > $p/scripts/$i.aln.sh
 
 
@@ -182,10 +187,19 @@ $SAMTOOLS depth $p/$i.dedup.bam | perl $GENOMECOVERAGE > $p/$i.dedup.bam.genomec
 
 
 
-" > $p/scripts/$sm-$lane-$index.sampe.sh
+" > $p/scripts/$i.sampe.sh
 
-job=`qsub $queue -hold_jid $hold_jid -e $p/log/$sm-$lane-$index.sampe.err.log -o $p/log/$sm-$lane-$index.sample.log $p/scripts/$sm-$lane-$index.sampe.sh`
-}
+if [ "$desc" = "WES" ]; then
+	echo "
+	$JAVA_BIN -jar $PICARD/CalculateHsMetrics.jar I=$p/$i.dedup.bam O=$p/$i.dedup.bam.target_coverage BI=$Target_picard TI=$Target_picard TMP_DIR=$p/temp VALIDATION_STRINGENCY=SILENT
+	$SAMTOOLS depth -b $Target_bed $p/$i.sorted.bam | perl $GENOMECOVERAGE > $p/$i.sorted.bam.target_depth
+	$SAMTOOLS depth -b $Target_bed $p/$i.dedup.bam | perl $GENOMECOVERAGE > $p/$i.dedup.bam.target_depth
+
+" >> $p/scripts/$i.sampe.sh
+fi
+
+job=`qsub $queue -hold_jid $hold_jid -e $p/log/$i.sampe.err.log -o $p/log/$i.sample.log $p/scripts/$i.sampe.sh`
+} #end_of_bwa
 
 ######## FUNCTION feed_bwa #########
 # find all fastq.gz pairs 
@@ -226,7 +240,7 @@ Lane=`echo $LINE | cut -f2 -d','`
 SampleID=`echo $LINE | cut -f3 -d','`
 Index=`echo $LINE | cut -f5 -d','`
 SampleProject=`echo $LINE | cut -f10 -d','`
-
+description=`echo $LINE | cut -f6 -d','`
 
 if [ ! $Index ]; then
 Index="NoIndex"
@@ -252,7 +266,7 @@ fi
     ln -s $r1.fastq.gz $newr1.fastq.gz
     ln -s $r2.fastq.gz $newr2.fastq.gz
 
-bwa $bam/Project_$SampleProject/Sample_$SampleID $newr1 $newr2 $SampleID $FCID $Lane $Index
+bwa $bam/Project_$SampleProject/Sample_$SampleID $newr1 $newr2 $SampleID $FCID $Lane $Index $description
 #sleep 10
 fi # end_of_count -gt 1
 
