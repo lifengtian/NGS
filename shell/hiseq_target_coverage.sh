@@ -47,9 +47,7 @@ fi
 
 
 
-######### FUNCTION bwa ###########
-# run BWA
-##################################
+######### FUNCTION  ###########
 function calc_coverage {
 p=$1/Sample_$2
 sm=$2

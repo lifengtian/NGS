@@ -16,8 +16,6 @@
 source $HISEQ/NGS/shell/function.sh
 
 
-# bamlist, etc.
-source $p/gatk.sh
 
 
 
@@ -30,6 +28,7 @@ source $p/gatk.sh
 p=$1
 
 
+source $p/gatk.sh
 # Resolute queue
 source $HISEQ/NGS/shell/setup.sh
 
@@ -81,7 +80,7 @@ for sid in ${bamlist[*]}; do
             " >> $p/scripts/$sid.merge.$timestamp.sh
             fi
 
-            job=`qsub $queue -V -e $p/logs/$sid.merge.$timestamp.log -o $p/logs/$sid.merge.$timestamp.log $p/scripts/$sid.merge.$timestamp.sh`
+            job=`qsub $queue  -e $p/logs/$sid.merge.$timestamp.log -o $p/logs/$sid.merge.$timestamp.log $p/scripts/$sid.merge.$timestamp.sh`
             hold_jid=`echo $job | awk '{print $3}'`
             d=`date`
             echo $d: Merge-Dedup-flagstat $hold_jid

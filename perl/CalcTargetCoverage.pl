@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+use strict;
+
 =head1 note
 ## net.sf.picard.metrics.StringHeader
 # net.sf.picard.analysis.directed.CalculateHsMetrics BAIT_INTERVALS=../../AMD/results/baits.picard TARGET_INTERVALS=../../AMD/results/baits.picard INPUT=DS103_CAGATC_L001.sorted.bam OUTPUT=DS103_CAGATC_L001.sorted.bam.coverage VALIDATION_STRINGENCY=SILENT    METRIC_ACCUMULATION_LEVEL=[ALL_READS] TMP_DIR=/tmp/lifeng2 VERBOSITY=INFO QUIET=false COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=false CREATE_MD5_FILE=false
@@ -55,39 +57,48 @@ SAMPLE	LIBRARY	READ_GROUP	BAIT_SET	GENOME_SIZE	BAIT_TERRITORY	TARGET_TERRITORY	B
 
 my $header_printed = 0;
 my $paste_file_names;
+my $outdir="/mnt/isilon/cag/ngs/hiseq/coverage/";
 
 # input is like /path/SID4695105858-2-TGACCA
 
-
+	
 foreach my $cov (@ARGV) {
 	my $sid;
 	my $lane;
 	my $index;
+	my $path;
+	my $O;
 
 	#parse SID, lane, index
-	if ( $cov=~/(SID\d+)-(\d+)-(\w+)$/ ) {
-		$sid = $1;
-		$lane = $2;
-		$index = $3;
+	if ( $cov=~/(.*)(SID\d+)-(\d+)-(\w+)$/ ) {
+		$path=$1;
+		$sid = $2;
+		$lane = $3;
+		$index = $4;
 	} else {
 		die "error parsing $cov\n";
 	}
 	
 
+	if (!  -f "$outdir"."$sid.coverage.txt" ) {
+		open $O, ">" ."$outdir"."$sid.coverage.txt" or die "Error open target.coverage";
+	} else {
+		print STDERR "$sid.coverage.txt exist!";
+		exit;
+	}
+
+	my $p=$path.$sid;
+	
+    open my $F,  $p. ".dedup.bam.target_coverage" || die "Error open $cov";
+    open my $F2, $p. ".dedup.bam.flagstat"        || die "Error open $cov";
+    open my $F3, $p. ".sorted.bam.flagstat"       || die "Error open $cov";
 
 
-    open F,  $cov . ".dedup.bam.target_coverage" || die "Error open $cov";
-    open F2, $cov . ".dedup.bam.flagstat"        || die "Error open $cov";
-    open F3, $cov . ".sorted.bam.flagstat"       || die "Error open $cov";
-
-    open O, ">" . $cov . '.out';
-
-    $paste_file_names .= "$cov.out ";
-    my $line;
+    my $line=<$F>;
 
     #skip headers
     while ( $line =~ /^#/ || $line =~ /^$/ ) {
-        $line = <F>;
+        $line = <$F>;
     }
 
     my @header = split /\s+/, $line;
@@ -105,66 +116,63 @@ foreach my $cov (@ARGV) {
     #    my ( $mapped, @t2 ) = split /\s+/, $line3;
 
     # to
-    my ( $total, @t ) = split /\s+/, <F3>;
-    <F3>;
-    my ( $total_mapped, @t ) = split /\s+/, <F3>;
-    my ( $after_dup,    @t ) = split /\s+/, <F2>;
-    <F2>;
-    my ( $after_dup_mapped, @t ) = split /\s+/, <F2>;
+    my ( $total, @t ) = split /\s+/, <$F3>;
+    <$F3>;
+    my ( $total_mapped, @t ) = split /\s+/, <$F3>;
+    my ( $after_dup,    @t ) = split /\s+/, <$F2>;
+    <$F2>;
+    my ( $after_dup_mapped, @t ) = split /\s+/, <$F2>;
 
-    $line = <F>;
+    $line = <$F>;
     my @result = split /\s+/, $line;
 
-    #$cov =~ /(.*?).dedup/;
-    #$result[0] = $1;
     $result[0] = $cov;
     foreach ( 2, 4, 6, 8, 15, 17, 19, 24, 28, 31, 32 ) {
         if ( !$header_printed ) {
-            print O $header[$_], "\t";
+            print $O $header[$_], "\t";
         }
         if ( $header[$_] =~ /^PCT/ || $header[$_] =~ /PCT$/ ) {
-            print O sprintf( "%.2f", $result[ $_ - 2 ] * 100 ), "\n";
+            print $O sprintf( "%.2f", $result[ $_ - 2 ] * 100 ), "\n";
         }
         else {
             if ( $result[ $_ - 2 ] =~ /\d\.\d/ ) {
-                print O sprintf( "%.2f", $result[ $_ - 2 ] ), "\n";
+                print $O sprintf( "%.2f", $result[ $_ - 2 ] ), "\n";
             }
             else {
-                print O $result[ $_ - 2 ], "\n";
+                print $O $result[ $_ - 2 ], "\n";
             }
         }
     }
     if ( !$header_printed ) {
-        print O "Total_reads\t", $total, "\n";
-        print O "Duplicate_reads\t", $total - $after_dup, "\n";
-        print O "Total_mapped_reads\t", $total_mapped, "\n";
-        print O "Duplicate_reads\/Total_mapped_reads\t",
+        print $O "Total_reads\t", $total, "\n";
+        print $O "Duplicate_reads\t", $total - $after_dup, "\n";
+        print $O "Total_mapped_reads\t", $total_mapped, "\n";
+        print $O "Duplicate_reads\/Total_mapped_reads\t",
           sprintf( "%.2f", ( $total - $after_dup ) / $total_mapped ), "\n";
-        print O "Mapped_reads_after_dup\t", $after_dup_mapped, "\n";
-	print O "SID\t", $sid,"\n";
-	print O "Lane\t", $lane,"\n";
-	print O "Index\t", $index, "\n";
+        print $O "Mapped_reads_after_dup\t", $after_dup_mapped, "\n";
+	print $O "SID\t", $sid,"\n";
+	print $O "Lane\t", $lane,"\n";
+	print $O "Index\t", $index, "\n";
 
     }
     else {
-        print O $total, "\n";
-        print O $total - $after_dup, "\n";
-        print O $total_mapped, "\n";
-        print O sprintf( "%.2f", ( $total - $after_dup ) / $total_mapped ),
+        print $O $total, "\n";
+        print $O $total - $after_dup, "\n";
+        print $O $total_mapped, "\n";
+        print $O sprintf( "%.2f", ( $total - $after_dup ) / $total_mapped ),
           "\n";
-        print O $after_dup_mapped, "\n";
-	print O $sid,"\n";
-	print O $lane, "\n";
-	print O $index, "\n";
+        print $O $after_dup_mapped, "\n";
+	print $O $sid,"\n";
+	print $O $lane, "\n";
+	print $O $index, "\n";
     }
 
-    close F;
-    close O;
-    close F2;
-    close F3;
+    close $F;
+    close $F2;
+    close $F3;
 
+    close $O;
     $header_printed = 1;
 }
 
-`paste $paste_file_names > target.coverage`;
 

@@ -40,7 +40,8 @@ print GATK "run=$config->{'run_name'}\n";
 print GATK "target=$config->{'target'}\n";
 print GATK "platform=$config->{'platform'}\n";
 
-system("bash $HISEQ/NGS/shell/hiseq_gatk_resolute.sh $p");
+#system("bash $HISEQ/NGS/shell/hiseq_gatk_resolute.sh $path");
+system("bash $HISEQ/NGS/shell/gatk.sh $path");
 #call variants
 #system("bash $HISEQ/NGS/shell/hiseq_genome_resolute.sh @{$SIDs}");
 

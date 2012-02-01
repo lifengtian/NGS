@@ -1,7 +1,7 @@
 
 function gatk_pipeline {
 
-# GATK variant caller for whole genome NGS sequencing
+# GATK variant caller for  NGS sequencing
 # INPUT : a set of BAM files
 # OUTPUT: vcf
 # VERSION: Nov 23, 2011
@@ -16,7 +16,7 @@ function gatk_pipeline {
 
 # to skip a step
 # create a stepx.log in the current dir
-
+p=$1
 
 ######################### How to Run the Pipeline #########################
 #
