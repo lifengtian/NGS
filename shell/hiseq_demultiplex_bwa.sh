@@ -74,11 +74,11 @@ fi
 #
 echo "
 
-$BclToFastq --fastq-cluster-count 0 --input-dir  $input_dir  --output-dir $output_dir --sample-sheet $SampleSheet
+$BclToFastq --use-bases-mask Y100N,I6N,Y100N --mismatches 1 --fastq-cluster-count 0 --input-dir  $input_dir  --output-dir $output_dir --sample-sheet $SampleSheet
 cd $output_dir
-nohup make -j 4  
+nohup make -j 8  
 " > $HISEQ/FASTQ/scripts/$FlowCellID.sh
-job=`qsub $queue -pe smp 4 -e $HISEQ/logs/$FlowCellID.log -o $HISEQ/logs/$FlowCellID.log $HISEQ/FASTQ/scripts/$FlowCellID.sh`
+job=`qsub $queue -pe smp 8 -e $HISEQ/logs/$FlowCellID.log -o $HISEQ/logs/$FlowCellID.log $HISEQ/FASTQ/scripts/$FlowCellID.sh`
 jobs=`echo $job | awk '{print $3}'`
 hold_demul_jid=$jobs
 

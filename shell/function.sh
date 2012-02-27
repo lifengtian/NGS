@@ -223,7 +223,7 @@ for i in ${bamlist[*]}; do
     
     " > $p/gatkscripts/$run.$i.step1.sh
 
-    job=`qsub $queue -hold_jid $hold_jid  -e $p/logs/$run.$i.step1.log -o $p/logs/$run.$i.step1.log $p/gatkscripts/$run.$i.step1.sh`
+    job=`qsub $queue -pe smp 1 -hold_jid $hold_jid  -e $p/logs/$run.$i.step1.log -o $p/logs/$run.$i.step1.log $p/gatkscripts/$run.$i.step1.sh`
     sleep 5  
     jobs[$count]=`echo $job | awk '{print $3}'`
     echo [1 BAM cleanup] ${jobs[$count]} submitted
@@ -258,7 +258,7 @@ if [ ! -f $p/step2.log ]; then
     		echo "$JAVA_GATK -T UnifiedGenotyper -glm BOTH  -R $ref $bams -o $vcf.$c.vcf $opt  -L $c  -A AlleleBalance -A DepthOfCoverage -A FisherStrand
     		" > $p/gatkscripts/$run.step2.$c.sh
     	
-	job=`qsub $queue -hold_jid $hold_jid -e $p/logs/$run.step2.$c.log -o $p/logs/$run.step2.$c.log $p/gatkscripts/$run.step2.$c.sh`
+	job=`qsub $queue -pe smp 1 -hold_jid $hold_jid -e $p/logs/$run.step2.$c.log -o $p/logs/$run.step2.$c.log $p/gatkscripts/$run.step2.$c.sh`
 	sleep 2    	
 	ug_jobs[$count]=`echo $job | awk '{print $3}'`
     		echo UnifiedGenotyper job for $c: ${ug_jobs[$count]} submitted
@@ -420,7 +420,7 @@ if [ ! -f $p/step3.log ]; then
 		" >> $p/gatkscripts/$run.step3.sh
 	fi
 
-	job=`qsub $queue -hold_jid $hold_jid -e $p/logs/$run.step3.log -o $p/logs/$run.step3.log $p/gatkscripts/$run.step3.sh`
+	job=`qsub $queue -pe smp 1 -hold_jid $hold_jid -e $p/logs/$run.step3.log -o $p/logs/$run.step3.log $p/gatkscripts/$run.step3.sh`
 	filter_jid=`echo $job | awk '{print $3}'`
 	echo [3 SelectVariants: $filter_job ] waiting for UnifiedGenotyper: $hold_jid 
     hold_jid=$filter_jid
@@ -455,7 +455,7 @@ for i in ${smlist[*]};do
     	"     >> $p/gatkscripts/$run.step4.VariantEval.$i.sh
 		
 	fi
-	job=`qsub $queue -hold_jid $hold_jid -e $p/logs/$run.step4.VariantEval.$i.log -o $p/logs/$run.step4.VariantEval.$i.log $p/gatkscripts/$run.step4.VariantEval.$i.sh`
+	job=`qsub $queue -pe smp 1 -hold_jid $hold_jid -e $p/logs/$run.step4.VariantEval.$i.log -o $p/logs/$run.step4.VariantEval.$i.log $p/gatkscripts/$run.step4.VariantEval.$i.sh`
 	tempjob=`echo $job | awk '{print $3}'`
     echo [3 VariantEval: $tempjob]  waiting for : $hold_job 
 

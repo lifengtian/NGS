@@ -1,6 +1,46 @@
 
 dbsnp135 is out. 
 
+Here is an example of 3 records in dbsnp 135:
+
+bin	585	585	585
+chrom	chr1	chr1	chr1
+chromStart	10144	10233	10433
+chromEnd	10145	10234	10433
+name	rs144773400	rs145599635	rs56289060
+score	0	0	0
+strand	+	+	+
+refNCBI	A	C	-
+refUCSC	A	C	-
+observed	-/A	C/T	-/C
+molType	genomic	genomic	genomic
+class	deletion	single	insertion
+valid	unknown	unknown	unknown
+avHet	0	0	0
+avHetSE	0	0	0
+func	unknown	near-gene-5	near-gene-5
+locType	exact	exact	between
+weight	1	1	1
+exceptions			
+submitterCount	1	1	1
+submitters	BL,	BL,	HGSV,
+alleleFreqCount	0	0	0
+
+?according to the sql, there are extra lines of alleles, alleleNs,
+alleleFreqs, bitfields? where are they?
+
+Note:
+1. chromStart and chromEnd follow the BED format, which starts from 0,
+half-close, half-open. To calculate the 1-based coordinate, it should be 
+chr:chromStart+1-chromEnd
+
+2. bgzip and tabix
+bgzip -c hg19_snp135.txt > hg19_snp135.txt.gz
+tabix -s 2 -b 3 -e4 hg19_snp135.txt.gz
+
+to retrieve rsID based on coordinates, we do:
+tabix hg19_snp135.txt.gz chr1:10145-10145
+
 
 
 

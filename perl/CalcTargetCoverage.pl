@@ -101,7 +101,7 @@ foreach my $cov (@ARGV) {
         $line = <$F>;
     }
 
-    my @header = split /\s+/, $line;
+    my @header = split /\t/, $line;
     foreach ( 0 .. $#header ) {
 
         #	 print $_,"\t",$header[$_],"\n";
@@ -124,7 +124,7 @@ foreach my $cov (@ARGV) {
     my ( $after_dup_mapped, @t ) = split /\s+/, <$F2>;
 
     $line = <$F>;
-    my @result = split /\s+/, $line;
+    my @result = split /\t/, $line;
 
     $result[0] = $cov;
     foreach ( 2, 4, 6, 8, 15, 17, 19, 24, 28, 31, 32 ) {
