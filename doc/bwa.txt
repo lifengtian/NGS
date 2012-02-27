@@ -1,0 +1,7 @@
+Functional Annotation of Genetic Variants: Sequencing reads from the Illumina® HiSeq instrument will be aligned to a reference genome using BWA (Li and Durbin, 2009) and the SNPs, small indels will be called using GATK (DePristo et al., 2011). The variants will be processed through the ANNOVAR28 annotation pipeline and compared with publically available databases as well as the SeattleSeq project to identify alleles that are rare or likely to interfere with gene function. ANNOVAR functionally annotates SNPs and CNVs generated from high-throughput sequencing experiments within exonic regions, but it also extends to other functional categories, such as identifying known and putatively functional variants in conserved genomic regions or transcription factor binding sites and functional importance scores such as SIFT and PolyPhen. Further, ANNOVAR can automatically identify variants that were previously reported in public databases, including the 1000 Genomes Project, dbSNP, and the Database for Genomic Variants.
+
+
+references:
+Li H. and Durbin R. (2009) Fast and accurate short read alignment with Burrows-Wheeler Transform. Bioinformatics, 25:1754-60.
+DePristo, M., Banks, E., Poplin, R., Garimella, K., Maguire, J., Hartl., C., Philippakis, A., del Angel, G., Rivas, M.A, Hanna, M., McKenna, A., Fennell, T. Kernytsky, A., Sivachenko, A, Cibulskis, K., Gabriel, S., Altshuler, D. and Daly, M. A framework for variation discovery and genotyping using next-generation DNA sequencing data. Nature Genetics. 2011 Apr; 43(5):491-498.
+

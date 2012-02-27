@@ -1,0 +1,15 @@
+
+dbsnp135 is out. 
+
+
+
+
+URI
+
+Current state of dbsnp135
+http://www.massgenomics.org/2012/01/the-current-state-of-dbsnp.html
+
+
+MySQL schema for snp135
+http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/snp135.sql
+
