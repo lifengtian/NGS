@@ -70,6 +70,8 @@ class Genotyper extends QScript {
     val evalUnfiltered = new VariantEval with UnifiedGenotyperArguments
     val evalFiltered = new VariantEval with UnifiedGenotyperArguments
 
+    genotyper.scatterCount = nContigs 
+
     genotyper.input_file = bams
     genotyper.out = "unifiedgenotyper.indel.vcf"
 
@@ -97,6 +99,8 @@ def call_genotypes_snp(bams: Seq[File])  {
     val variantFilter = new VariantFiltration with UnifiedGenotyperArguments
     val evalUnfiltered = new VariantEval with UnifiedGenotyperArguments
     val evalFiltered = new VariantEval with UnifiedGenotyperArguments
+
+    genotyper.scatterCount = nContigs
 
     genotyper.input_file = bams
     genotyper.out = "unifiedgenotyper.snp.vcf"

@@ -30,10 +30,12 @@ class Genotyper extends QScript {
   var intervals: File = _
 
   @Argument(doc="A optional list of filter names.", shortName="filter", required=false)
-  var filterNames: List[String] = Nil // Nil is an empty List, versus null which means a non-existent List.
+  //var filterNames: List[String] = Nil // Nil is an empty List, versus null which means a non-existent List.
+  var filterNames: List[String] =  List("LowQualityDepth","MappingQuality","StrandBias","HaplotypeScoreHigh","MQRankSumLow","ReadPosRankSumLow" )
 
   @Argument(doc="An optional list of filter expressions.", shortName="filterExpression", required=false)
-  var filterExpressions: List[String] = Nil
+  //var filterExpressions: List[String] = Nil
+  var filterExpressions: List[String] = List ("QD < 2.0", "MQ < 40.0", "FS > 60.0", "HaplotypeScore > 13.0", "MQRankSum < -12.5", "ReadPosRankSum < -8.0")
 
   // This trait allows us set the variables below in one place,
   // and then reuse this trait on each CommandLineGATK function below.
