@@ -9,6 +9,7 @@ import org.broadinstitute.sting.gatk.phonehome._
 import org.broadinstitute.sting.gatk.walkers.genotyper.GenotypeLikelihoodsCalculationModel
 
   
+import org.broadinstitute.sting.queue.extensions.snpeff._
 
 /**
  * UnifiedGenotyper 
@@ -54,7 +55,10 @@ class Genotyper extends QScript {
     this.phone_home = GATKRunReport.PhoneHomeOption.NO_ET
     this.gatk_key = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/TianL_email.chop.edu.key"
   }
-
+  
+  
+  val queueLogDir: String = ".qlog/" // Gracefully hide Queue's output
+  
   @Hidden
   @Argument(doc="How many ways to scatter/gather", fullName="scatter_gather", shortName="sg", required=false)
   var nContigs: Int = -1
@@ -141,6 +145,19 @@ def call_genotypes_snp(bams: Seq[File])  {
 	annotate_snpEff("unifiedgenotyper.snp.filtered.vcf")
 
 
+  }
+
+case class varannotator (inVcf: File, inSnpEffFile: File, outVcf: File) extends VariantAnnotator  {
+    this.variant = inVcf
+    this.snpEffFile = inSnpEffFile
+    this.out = outVcf
+    this.alwaysAppendDbsnpId = true
+    this.D = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/dbsnp_135.hg19.vcf"
+    this.R = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/hg19/hg19.fa"
+    this.A = Seq("SnpEff")
+    this.isIntermediate = false
+    this.analysisName = queueLogDir + outVcf + ".varannotator"
+    this.jobName = queueLogDir + outVcf + ".varannotator"
   }
 }
 
