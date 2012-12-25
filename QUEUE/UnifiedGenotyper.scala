@@ -109,6 +109,7 @@ def call_genotypes_snp(bams: Seq[File])  {
 
     evalUnfiltered.eval :+= genotyper.out
     evalUnfiltered.out = swapExt(genotyper.out, "vcf", "eval")
+    evalUnfiltered.dbsnp = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/dbsnp_135.hg19.vcf"
 
     variantFilter.variant = genotyper.out
     variantFilter.out = swapExt(genotyper.out, "vcf", "filtered.vcf")
@@ -117,10 +118,11 @@ def call_genotypes_snp(bams: Seq[File])  {
 
     evalFiltered.eval :+= variantFilter.out
     evalFiltered.out = swapExt(variantFilter.out, "vcf", "eval")
+    evalFiltered.dbsnp = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/dbsnp_135.hg19.vcf"
 
     add(genotyper, evalUnfiltered)
     // Only add variant filtration to the pipeline if filters were passed in
-    if (snpfilterNames.size > 0)
+    //if (snpfilterNames.size > 0)
       add(variantFilter, evalFiltered)
 }
 
@@ -131,14 +133,14 @@ def call_genotypes_snp(bams: Seq[File])  {
         eff.genomeVersion = "GRCh37.64"
 
 	eff.inVcf = inVcf
-	var snpEffout: File  = swapExt(eff.inVcf, "vcf", "snpEff.out")
-        eff.outVcf = swapExt(eff.inVcf, "vcf", "snpEff.vcf")
-        
+	var snpEffout: File  = swapExt(eff.inVcf, "vcf", "snpEff.vcf")
+        eff.outVcf = swapExt(eff.inVcf, "vcf", "snpEff.out")
+       	 
         eff.javaClasspath = List("/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/snpEff_2_0_5/")
         eff.jarFile = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/snpEff_2_0_5/snpEff.jar"
     
         add(eff)
-        add(varannotator("out.unfiltered.filtered.vcf","out.snpEff.vcf","out.final.vcf"))
+	add(varannotator(eff.inVcf,eff.outVcf,snpEffout))
 }
 
   def script() {
