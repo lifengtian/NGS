@@ -7,6 +7,7 @@ import org.broadinstitute.sting.commandline.Hidden
 
 import org.broadinstitute.sting.gatk.phonehome._
 
+import org.broadinstitute.sting.queue.extensions.snpeff._
 
 /**
  * HaplotypeCaller
@@ -49,6 +50,8 @@ class Genotyper extends QScript {
   
   }
 
+  val queueLogDir: String = ".qlog/" // Gracefully hide Queue's output
+
   @Hidden
   @Argument(doc="How many ways to scatter/gather", fullName="scatter_gather", shortName="sg", required=false)
   var nContigs: Int = -1
@@ -79,6 +82,43 @@ class Genotyper extends QScript {
     // Only add variant filtration to the pipeline if filters were passed in
     if (filterNames.size > 0)
       add(variantFilter, evalFiltered)
+
+   annotate_snpEff ( variantFilter.out )
+
   }
+
+
+
+case class varannotator (inVcf: File, inSnpEffFile: File, outVcf: File) extends VariantAnnotator  {
+    this.variant = inVcf
+    this.snpEffFile = inSnpEffFile
+    this.out = outVcf
+    this.alwaysAppendDbsnpId = true
+    this.D = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/dbsnp_135.hg19.vcf"
+    this.R = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/hg19/hg19.fa"
+    this.A = Seq("SnpEff")
+    this.isIntermediate = false
+    this.analysisName = queueLogDir + outVcf + ".varannotator"
+    this.jobName = queueLogDir + outVcf + ".varannotator"
+    this.scatterCount = nContigs
+  }
+
+
+  def annotate_snpEff(inVcf: File) {
+        val eff = new SnpEff
+        eff.config = new File("/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/snpEff_2_0_5/snpEff.config")
+        eff.genomeVersion = "GRCh37.64"
+
+        eff.inVcf = inVcf
+        var snpEffout: File  = swapExt(eff.inVcf, "vcf", "snpEff.vcf")
+        eff.outVcf = swapExt(eff.inVcf, "vcf", "snpEff.out")
+
+        eff.javaClasspath = List("/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/snpEff_2_0_5/")
+        eff.jarFile = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/snpEff_2_0_5/snpEff.jar"
+
+        add(eff)
+        add(varannotator(eff.inVcf,eff.outVcf,snpEffout))
 }
 
+
+}
