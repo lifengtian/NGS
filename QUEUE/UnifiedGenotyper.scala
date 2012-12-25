@@ -164,6 +164,7 @@ case class varannotator (inVcf: File, inSnpEffFile: File, outVcf: File) extends 
     this.isIntermediate = false
     this.analysisName = queueLogDir + outVcf + ".varannotator"
     this.jobName = queueLogDir + outVcf + ".varannotator"
+    this.scatterCount = nContigs
   }
 }
 
