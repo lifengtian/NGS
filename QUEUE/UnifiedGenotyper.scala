@@ -15,7 +15,6 @@ import org.broadinstitute.sting.queue.extensions.snpeff._
  * UnifiedGenotyper 
  */
 class Genotyper extends QScript {
-  // 'qscript' is now the same as 'ExampleUnifiedGenotyper.this'
   qscript =>
 
 
