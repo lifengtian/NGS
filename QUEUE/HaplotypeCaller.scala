@@ -30,6 +30,9 @@ class Genotyper extends QScript {
   @Input(doc="An optional file with a list of intervals to proccess.", shortName="L", required=false)
   var intervals: File = _
 
+  @Argument(doc="interval padding ", fullName="interval_padding", shortName="ip",required=false)
+  var ip: Int = _
+
   @Argument(doc="A optional list of filter names.", shortName="filter", required=false)
   //var filterNames: List[String] = Nil // Nil is an empty List, versus null which means a non-existent List.
   var filterNames: List[String] =  List("LowQualityDepth","MappingQuality","StrandBias","HaplotypeScoreHigh","MQRankSumLow","ReadPosRankSumLow" )
@@ -44,10 +47,10 @@ class Genotyper extends QScript {
     this.reference_sequence = qscript.referenceFile
     this.intervals = if (qscript.intervals == null) Nil else List(qscript.intervals)
     // Set the memory limit to 4 gigabytes on each command.
-    this.memoryLimit = 4
+    this.memoryLimit = 12 
     this.phone_home = GATKRunReport.PhoneHomeOption.NO_ET
     this.gatk_key = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/TianL_email.chop.edu.key"
-  
+    this.interval_padding = ip  
   }
 
   val queueLogDir: String = ".qlog/" // Gracefully hide Queue's output
@@ -69,6 +72,7 @@ class Genotyper extends QScript {
 
     evalUnfiltered.eval :+= genotyper.out
     evalUnfiltered.out = swapExt(genotyper.out, "vcf", "eval")
+    evalUnfiltered.num_threads = 4
 
     variantFilter.variant = genotyper.out
     variantFilter.out = swapExt(genotyper.out, "vcf", "filtered.vcf")
@@ -77,6 +81,7 @@ class Genotyper extends QScript {
 
     evalFiltered.eval :+= variantFilter.out
     evalFiltered.out = swapExt(variantFilter.out, "vcf", "eval")
+    evalFiltered.num_threads = 4
 
     add(genotyper, evalUnfiltered)
     // Only add variant filtration to the pipeline if filters were passed in

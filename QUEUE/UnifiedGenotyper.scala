@@ -15,6 +15,7 @@ import org.broadinstitute.sting.queue.extensions.snpeff._
  * UnifiedGenotyper 
  */
 class Genotyper extends QScript {
+  // 'qscript' is now the same as 'ExampleUnifiedGenotyper.this'
   qscript =>
 
 
@@ -30,6 +31,9 @@ class Genotyper extends QScript {
 
   @Input(doc="An optional file with a list of intervals to proccess.", shortName="L", required=false)
   var intervals: File = _
+
+  @Argument(doc="interval padding ", fullName="interval_padding", shortName="ip",required=false)
+  var ip: Int = _
 
   @Argument(doc="A optional list of filter names.", shortName="snpfilter", required=false)
   var snpfilterNames: List[String] =  List("LowQualityDepth","MappingQuality","StrandBias","HaplotypeScoreHigh","MQRankSumLow","ReadPosRankSumLow" )
@@ -49,10 +53,10 @@ class Genotyper extends QScript {
   trait UnifiedGenotyperArguments extends CommandLineGATK {
     this.reference_sequence = qscript.referenceFile
     this.intervals = if (qscript.intervals == null) Nil else List(qscript.intervals)
-    // Set the memory limit to 4 gigabytes on each command.
-    this.memoryLimit = 4
+    this.memoryLimit = 8 
     this.phone_home = GATKRunReport.PhoneHomeOption.NO_ET
     this.gatk_key = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/TianL_email.chop.edu.key"
+    this.interval_padding = ip
   }
   
   
@@ -145,8 +149,8 @@ def call_genotypes_snp(bams: Seq[File])  {
   def script() {
 
 	call_genotypes_snp(bamFile)
-	call_genotypes_indel(bamFile)
-	annotate_snpEff("unifiedgenotyper.indel.filtered.vcf")
+	//call_genotypes_indel(bamFile)
+	//annotate_snpEff("unifiedgenotyper.indel.filtered.vcf")
 	annotate_snpEff("unifiedgenotyper.snp.filtered.vcf")
 
 

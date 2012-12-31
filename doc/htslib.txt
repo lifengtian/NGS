@@ -1,0 +1,26 @@
+
+
+http://vcftools.sourceforge.net/htslib.html#check%22
+
+
+
+git clone https://github.com/samtools/htslib.git htslib 
+
+# Compile
+cd htslib
+make
+
+# Run
+htscmd vcfcheck file.vcf.gz
+
+# Symlinking the executable as 'vcf' allows terse execution of VCF commands:
+ln -s htscmd vcf
+vcf check file.vcf.gz 
+
+vcf check file.vcf.gz > file.vchk
+plot-vcfcheck file.vchk -p plots/
+
+(plot-vcfcheck is in the misc of htslib)
+
+plot-vcfcheck requires matplotlib , which requires numpy
+

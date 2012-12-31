@@ -1,0 +1,6 @@
+git://github.com/samtools/tabix.git
+
+bgzip -c $vcf > $vcf.gz
+tabix -p $vcf.gz
+
+ 
