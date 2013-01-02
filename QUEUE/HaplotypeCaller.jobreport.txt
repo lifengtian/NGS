@@ -1,0 +1,203 @@
+#:GATKReport.v1.1:8
+#:GATKTable:10:80:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:;
+#:GATKTable:.qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator:Job logs for .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator
+jobName               exechosts              startTime      formattedStartTime     analysisName                                                    iteration  intermediate  formattedDoneTime      runtime  doneTime     
+HaplotypeCaller-6-14  respublica.cm.cluster  1356402990798  12-12-24 21:36:30:798  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:807        9  1356402990807
+HaplotypeCaller-6-71  respublica.cm.cluster  1356402991247  12-12-24 21:36:31:247  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:254        7  1356402991254
+HaplotypeCaller-6-38  respublica.cm.cluster  1356402990994  12-12-24 21:36:30:994  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:001        7  1356402991001
+HaplotypeCaller-6-19  respublica.cm.cluster  1356402990842  12-12-24 21:36:30:842  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:850        8  1356402990850
+HaplotypeCaller-6-65  respublica.cm.cluster  1356402991205  12-12-24 21:36:31:205  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:214        9  1356402991214
+HaplotypeCaller-6-52  respublica.cm.cluster  1356402991106  12-12-24 21:36:31:106  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:115        9  1356402991115
+HaplotypeCaller-6-69  respublica.cm.cluster  1356402991234  12-12-24 21:36:31:234  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:241        7  1356402991241
+HaplotypeCaller-6-76  respublica.cm.cluster  1356402991283  12-12-24 21:36:31:283  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:297       14  1356402991297
+HaplotypeCaller-6-64  respublica.cm.cluster  1356402991196  12-12-24 21:36:31:196  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:205        9  1356402991205
+HaplotypeCaller-6-32  respublica.cm.cluster  1356402990949  12-12-24 21:36:30:949  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:956        7  1356402990956
+HaplotypeCaller-6-30  respublica.cm.cluster  1356402990933  12-12-24 21:36:30:933  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:941        8  1356402990941
+HaplotypeCaller-6-23  respublica.cm.cluster  1356402990873  12-12-24 21:36:30:873  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:881        8  1356402990881
+HaplotypeCaller-6-41  respublica.cm.cluster  1356402991022  12-12-24 21:36:31:022  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:029        7  1356402991029
+HaplotypeCaller-6-39  respublica.cm.cluster  1356402991001  12-12-24 21:36:31:001  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:014       13  1356402991014
+HaplotypeCaller-6-6   respublica.cm.cluster  1356402990719  12-12-24 21:36:30:719  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:728        9  1356402990728
+HaplotypeCaller-6-26  respublica.cm.cluster  1356402990896  12-12-24 21:36:30:896  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:903        7  1356402990903
+HaplotypeCaller-6-4   respublica.cm.cluster  1356402990702  12-12-24 21:36:30:702  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:710        8  1356402990710
+HaplotypeCaller-6-33  respublica.cm.cluster  1356402990956  12-12-24 21:36:30:956  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:963        7  1356402990963
+HaplotypeCaller-6-24  respublica.cm.cluster  1356402990881  12-12-24 21:36:30:881  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:888        7  1356402990888
+HaplotypeCaller-6-31  respublica.cm.cluster  1356402990941  12-12-24 21:36:30:941  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:949        8  1356402990949
+HaplotypeCaller-6-25  respublica.cm.cluster  1356402990888  12-12-24 21:36:30:888  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:896        8  1356402990896
+HaplotypeCaller-6-42  respublica.cm.cluster  1356402991029  12-12-24 21:36:31:029  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:038        9  1356402991038
+HaplotypeCaller-6-68  respublica.cm.cluster  1356402991227  12-12-24 21:36:31:227  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:234        7  1356402991234
+HaplotypeCaller-6-49  respublica.cm.cluster  1356402991080  12-12-24 21:36:31:080  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:087        7  1356402991087
+HaplotypeCaller-6-54  respublica.cm.cluster  1356402991121  12-12-24 21:36:31:121  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:130        9  1356402991130
+HaplotypeCaller-6-12  respublica.cm.cluster  1356402990780  12-12-24 21:36:30:780  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:789        9  1356402990789
+HaplotypeCaller-6-35  respublica.cm.cluster  1356402990970  12-12-24 21:36:30:970  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:978        8  1356402990978
+HaplotypeCaller-6-10  respublica.cm.cluster  1356402990759  12-12-24 21:36:30:759  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:767        8  1356402990767
+HaplotypeCaller-6-21  respublica.cm.cluster  1356402990858  12-12-24 21:36:30:858  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:866        8  1356402990866
+HaplotypeCaller-6-77  respublica.cm.cluster  1356402991297  12-12-24 21:36:31:297  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:305        8  1356402991305
+HaplotypeCaller-6-62  respublica.cm.cluster  1356402991177  12-12-24 21:36:31:177  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:184        7  1356402991184
+HaplotypeCaller-6-17  respublica.cm.cluster  1356402990826  12-12-24 21:36:30:826  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:835        9  1356402990835
+HaplotypeCaller-6-3   respublica.cm.cluster  1356402990694  12-12-24 21:36:30:694  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:702        8  1356402990702
+HaplotypeCaller-6-34  respublica.cm.cluster  1356402990963  12-12-24 21:36:30:963  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:970        7  1356402990970
+HaplotypeCaller-6-58  respublica.cm.cluster  1356402991150  12-12-24 21:36:31:150  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:157        7  1356402991157
+HaplotypeCaller-6-61  respublica.cm.cluster  1356402991170  12-12-24 21:36:31:170  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:177        7  1356402991177
+HaplotypeCaller-6-7   respublica.cm.cluster  1356402990728  12-12-24 21:36:30:728  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:736        8  1356402990736
+HaplotypeCaller-6-81  respublica.cm.cluster  1356402991327  12-12-24 21:36:31:327  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:334        7  1356402991334
+HaplotypeCaller-6-73  respublica.cm.cluster  1356402991261  12-12-24 21:36:31:261  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:269        8  1356402991269
+HaplotypeCaller-6-51  respublica.cm.cluster  1356402991100  12-12-24 21:36:31:100  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:106        6  1356402991106
+HaplotypeCaller-6-28  respublica.cm.cluster  1356402990912  12-12-24 21:36:30:912  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:925       13  1356402990925
+HaplotypeCaller-6-8   respublica.cm.cluster  1356402990736  12-12-24 21:36:30:736  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:744        8  1356402990744
+HaplotypeCaller-6-70  respublica.cm.cluster  1356402991241  12-12-24 21:36:31:241  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:247        6  1356402991247
+HaplotypeCaller-6-40  respublica.cm.cluster  1356402991014  12-12-24 21:36:31:014  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:022        8  1356402991022
+HaplotypeCaller-6-50  respublica.cm.cluster  1356402991087  12-12-24 21:36:31:087  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:100       13  1356402991100
+HaplotypeCaller-6-66  respublica.cm.cluster  1356402991214  12-12-24 21:36:31:214  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:221        7  1356402991221
+HaplotypeCaller-6-47  respublica.cm.cluster  1356402991066  12-12-24 21:36:31:066  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:073        7  1356402991073
+HaplotypeCaller-6-18  respublica.cm.cluster  1356402990835  12-12-24 21:36:30:835  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:842        7  1356402990842
+HaplotypeCaller-6-63  respublica.cm.cluster  1356402991184  12-12-24 21:36:31:184  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:196       12  1356402991196
+HaplotypeCaller-6-43  respublica.cm.cluster  1356402991038  12-12-24 21:36:31:038  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:045        7  1356402991045
+HaplotypeCaller-6-13  respublica.cm.cluster  1356402990789  12-12-24 21:36:30:789  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:798        9  1356402990798
+HaplotypeCaller-6-5   respublica.cm.cluster  1356402990710  12-12-24 21:36:30:710  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:719        9  1356402990719
+HaplotypeCaller-6-48  respublica.cm.cluster  1356402991073  12-12-24 21:36:31:073  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:080        7  1356402991080
+HaplotypeCaller-6-56  respublica.cm.cluster  1356402991137  12-12-24 21:36:31:137  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:143        6  1356402991143
+HaplotypeCaller-6-45  respublica.cm.cluster  1356402991052  12-12-24 21:36:31:052  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:059        7  1356402991059
+HaplotypeCaller-6-22  respublica.cm.cluster  1356402990866  12-12-24 21:36:30:866  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:873        7  1356402990873
+HaplotypeCaller-6-80  respublica.cm.cluster  1356402991321  12-12-24 21:36:31:321  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:327        6  1356402991327
+HaplotypeCaller-6-15  respublica.cm.cluster  1356402990807  12-12-24 21:36:30:807  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:817       10  1356402990817
+HaplotypeCaller-6-78  respublica.cm.cluster  1356402991305  12-12-24 21:36:31:305  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:314        9  1356402991314
+HaplotypeCaller-6-11  respublica.cm.cluster  1356402990767  12-12-24 21:36:30:767  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:780       13  1356402990780
+HaplotypeCaller-6-20  respublica.cm.cluster  1356402990850  12-12-24 21:36:30:850  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:858        8  1356402990858
+HaplotypeCaller-6-9   respublica.cm.cluster  1356402990744  12-12-24 21:36:30:744  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:759       15  1356402990759
+HaplotypeCaller-6-27  respublica.cm.cluster  1356402990903  12-12-24 21:36:30:903  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:912        9  1356402990912
+HaplotypeCaller-6-75  respublica.cm.cluster  1356402991276  12-12-24 21:36:31:276  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:283        7  1356402991283
+HaplotypeCaller-6-2   respublica.cm.cluster  1356402990684  12-12-24 21:36:30:684  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:694       10  1356402990694
+HaplotypeCaller-6-57  respublica.cm.cluster  1356402991143  12-12-24 21:36:31:143  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:150        7  1356402991150
+HaplotypeCaller-6-46  respublica.cm.cluster  1356402991059  12-12-24 21:36:31:059  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:066        7  1356402991066
+HaplotypeCaller-6-53  respublica.cm.cluster  1356402991115  12-12-24 21:36:31:115  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:121        6  1356402991121
+HaplotypeCaller-6-67  respublica.cm.cluster  1356402991221  12-12-24 21:36:31:221  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:227        6  1356402991227
+HaplotypeCaller-6-36  respublica.cm.cluster  1356402990978  12-12-24 21:36:30:978  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:986        8  1356402990986
+HaplotypeCaller-6-55  respublica.cm.cluster  1356402991130  12-12-24 21:36:31:130  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:137        7  1356402991137
+HaplotypeCaller-6-74  respublica.cm.cluster  1356402991269  12-12-24 21:36:31:269  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:276        7  1356402991276
+HaplotypeCaller-6-44  respublica.cm.cluster  1356402991045  12-12-24 21:36:31:045  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:052        7  1356402991052
+HaplotypeCaller-6-59  respublica.cm.cluster  1356402991157  12-12-24 21:36:31:157  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:164        7  1356402991164
+HaplotypeCaller-6-29  respublica.cm.cluster  1356402990925  12-12-24 21:36:30:925  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:933        8  1356402990933
+HaplotypeCaller-6-79  respublica.cm.cluster  1356402991314  12-12-24 21:36:31:314  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:321        7  1356402991321
+HaplotypeCaller-6-72  respublica.cm.cluster  1356402991254  12-12-24 21:36:31:254  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:261        7  1356402991261
+HaplotypeCaller-6-16  respublica.cm.cluster  1356402990817  12-12-24 21:36:30:817  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:826        9  1356402990826
+HaplotypeCaller-6-60  respublica.cm.cluster  1356402991164  12-12-24 21:36:31:164  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:31:170        6  1356402991170
+HaplotypeCaller-6-37  respublica.cm.cluster  1356402990986  12-12-24 21:36:30:986  .qlog_out.haplotypecaller.raw.filtered.snpEff.vcf.varannotator          1  true          12-12-24 21:36:30:994        8  1356402990994
+
+#:GATKTable:10:2:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:;
+#:GATKTable:Concat:Job logs for Concat
+jobName               exechosts              startTime      formattedStartTime     analysisName  iteration  intermediate  formattedDoneTime      runtime  doneTime     
+HaplotypeCaller-1-83  respublica.cm.cluster  1356402990607  12-12-24 21:36:30:607  Concat                1  false         12-12-24 21:36:30:611        4  1356402990611
+HaplotypeCaller-6-83  respublica.cm.cluster  1356402991362  12-12-24 21:36:31:362  Concat                1  false         12-12-24 21:36:31:366        4  1356402991366
+
+#:GATKTable:10:2:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:;
+#:GATKTable:Gather:Job logs for Gather
+jobName               exechosts              startTime      formattedStartTime     analysisName  iteration  intermediate  formattedDoneTime      runtime  doneTime     
+HaplotypeCaller-6-82  respublica.cm.cluster  1356402991339  12-12-24 21:36:31:339  Gather                1  false         12-12-24 21:36:31:357       18  1356402991357
+HaplotypeCaller-1-82  respublica.cm.cluster  1356402990573  12-12-24 21:36:30:573  Gather                1  false         12-12-24 21:36:30:597       24  1356402990597
+
+#:GATKTable:10:80:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:;
+#:GATKTable:HaplotypeCaller:Job logs for HaplotypeCaller
+jobName               exechosts              startTime      formattedStartTime     analysisName     iteration  intermediate  formattedDoneTime      runtime  doneTime     
+HaplotypeCaller-1-45  respublica.cm.cluster  1356402990241  12-12-24 21:36:30:241  HaplotypeCaller          1  true          12-12-24 21:36:30:250        9  1356402990250
+HaplotypeCaller-1-11  respublica.cm.cluster  1356402989865  12-12-24 21:36:29:865  HaplotypeCaller          1  true          12-12-24 21:36:29:876       11  1356402989876
+HaplotypeCaller-1-43  respublica.cm.cluster  1356402990222  12-12-24 21:36:30:222  HaplotypeCaller          1  true          12-12-24 21:36:30:231        9  1356402990231
+HaplotypeCaller-1-61  respublica.cm.cluster  1356402990381  12-12-24 21:36:30:381  HaplotypeCaller          1  true          12-12-24 21:36:30:389        8  1356402990389
+HaplotypeCaller-1-6   respublica.cm.cluster  1356402989772  12-12-24 21:36:29:772  HaplotypeCaller          1  true          12-12-24 21:36:29:807       35  1356402989807
+HaplotypeCaller-1-63  respublica.cm.cluster  1356402990398  12-12-24 21:36:30:398  HaplotypeCaller          1  true          12-12-24 21:36:30:406        8  1356402990406
+HaplotypeCaller-1-12  respublica.cm.cluster  1356402989876  12-12-24 21:36:29:876  HaplotypeCaller          1  true          12-12-24 21:36:29:887       11  1356402989887
+HaplotypeCaller-1-57  respublica.cm.cluster  1356402990347  12-12-24 21:36:30:347  HaplotypeCaller          1  true          12-12-24 21:36:30:355        8  1356402990355
+HaplotypeCaller-1-17  respublica.cm.cluster  1356402989942  12-12-24 21:36:29:942  HaplotypeCaller          1  true          12-12-24 21:36:29:953       11  1356402989953
+HaplotypeCaller-1-80  respublica.cm.cluster  1356402990546  12-12-24 21:36:30:546  HaplotypeCaller          1  true          12-12-24 21:36:30:555        9  1356402990555
+HaplotypeCaller-1-69  respublica.cm.cluster  1356402990448  12-12-24 21:36:30:448  HaplotypeCaller          1  true          12-12-24 21:36:30:457        9  1356402990457
+HaplotypeCaller-1-46  respublica.cm.cluster  1356402990250  12-12-24 21:36:30:250  HaplotypeCaller          1  true          12-12-24 21:36:30:259        9  1356402990259
+HaplotypeCaller-1-14  respublica.cm.cluster  1356402989904  12-12-24 21:36:29:904  HaplotypeCaller          1  true          12-12-24 21:36:29:917       13  1356402989917
+HaplotypeCaller-1-31  respublica.cm.cluster  1356402990091  12-12-24 21:36:30:091  HaplotypeCaller          1  true          12-12-24 21:36:30:101       10  1356402990101
+HaplotypeCaller-1-44  respublica.cm.cluster  1356402990231  12-12-24 21:36:30:231  HaplotypeCaller          1  true          12-12-24 21:36:30:241       10  1356402990241
+HaplotypeCaller-1-38  respublica.cm.cluster  1356402990163  12-12-24 21:36:30:163  HaplotypeCaller          1  true          12-12-24 21:36:30:178       15  1356402990178
+HaplotypeCaller-1-30  respublica.cm.cluster  1356402990081  12-12-24 21:36:30:081  HaplotypeCaller          1  true          12-12-24 21:36:30:091       10  1356402990091
+HaplotypeCaller-1-55  respublica.cm.cluster  1356402990330  12-12-24 21:36:30:330  HaplotypeCaller          1  true          12-12-24 21:36:30:338        8  1356402990338
+HaplotypeCaller-1-54  respublica.cm.cluster  1356402990322  12-12-24 21:36:30:322  HaplotypeCaller          1  true          12-12-24 21:36:30:330        8  1356402990330
+HaplotypeCaller-1-22  respublica.cm.cluster  1356402989997  12-12-24 21:36:29:997  HaplotypeCaller          1  true          12-12-24 21:36:30:007       10  1356402990007
+HaplotypeCaller-1-27  respublica.cm.cluster  1356402990049  12-12-24 21:36:30:049  HaplotypeCaller          1  true          12-12-24 21:36:30:060       11  1356402990060
+HaplotypeCaller-1-3   respublica.cm.cluster  1356402989737  12-12-24 21:36:29:737  HaplotypeCaller          1  true          12-12-24 21:36:29:748       11  1356402989748
+HaplotypeCaller-1-48  respublica.cm.cluster  1356402990269  12-12-24 21:36:30:269  HaplotypeCaller          1  true          12-12-24 21:36:30:278        9  1356402990278
+HaplotypeCaller-1-52  respublica.cm.cluster  1356402990304  12-12-24 21:36:30:304  HaplotypeCaller          1  true          12-12-24 21:36:30:313        9  1356402990313
+HaplotypeCaller-1-56  respublica.cm.cluster  1356402990338  12-12-24 21:36:30:338  HaplotypeCaller          1  true          12-12-24 21:36:30:347        9  1356402990347
+HaplotypeCaller-1-76  respublica.cm.cluster  1356402990507  12-12-24 21:36:30:507  HaplotypeCaller          1  true          12-12-24 21:36:30:515        8  1356402990515
+HaplotypeCaller-1-60  respublica.cm.cluster  1356402990372  12-12-24 21:36:30:372  HaplotypeCaller          1  true          12-12-24 21:36:30:381        9  1356402990381
+HaplotypeCaller-1-28  respublica.cm.cluster  1356402990060  12-12-24 21:36:30:060  HaplotypeCaller          1  true          12-12-24 21:36:30:070       10  1356402990070
+HaplotypeCaller-1-33  respublica.cm.cluster  1356402990112  12-12-24 21:36:30:112  HaplotypeCaller          1  true          12-12-24 21:36:30:122       10  1356402990122
+HaplotypeCaller-1-77  respublica.cm.cluster  1356402990515  12-12-24 21:36:30:515  HaplotypeCaller          1  true          12-12-24 21:36:30:523        8  1356402990523
+HaplotypeCaller-1-26  respublica.cm.cluster  1356402990039  12-12-24 21:36:30:039  HaplotypeCaller          1  true          12-12-24 21:36:30:049       10  1356402990049
+HaplotypeCaller-1-67  respublica.cm.cluster  1356402990432  12-12-24 21:36:30:432  HaplotypeCaller          1  true          12-12-24 21:36:30:440        8  1356402990440
+HaplotypeCaller-1-23  respublica.cm.cluster  1356402990007  12-12-24 21:36:30:007  HaplotypeCaller          1  true          12-12-24 21:36:30:018       11  1356402990018
+HaplotypeCaller-1-50  respublica.cm.cluster  1356402990287  12-12-24 21:36:30:287  HaplotypeCaller          1  true          12-12-24 21:36:30:296        9  1356402990296
+HaplotypeCaller-1-21  respublica.cm.cluster  1356402989986  12-12-24 21:36:29:986  HaplotypeCaller          1  true          12-12-24 21:36:29:997       11  1356402989997
+HaplotypeCaller-1-78  respublica.cm.cluster  1356402990523  12-12-24 21:36:30:523  HaplotypeCaller          1  true          12-12-24 21:36:30:531        8  1356402990531
+HaplotypeCaller-1-35  respublica.cm.cluster  1356402990132  12-12-24 21:36:30:132  HaplotypeCaller          1  true          12-12-24 21:36:30:143       11  1356402990143
+HaplotypeCaller-1-36  respublica.cm.cluster  1356402990143  12-12-24 21:36:30:143  HaplotypeCaller          1  true          12-12-24 21:36:30:153       10  1356402990153
+HaplotypeCaller-1-9   respublica.cm.cluster  1356402989829  12-12-24 21:36:29:829  HaplotypeCaller          1  true          12-12-24 21:36:29:853       24  1356402989853
+HaplotypeCaller-1-32  respublica.cm.cluster  1356402990101  12-12-24 21:36:30:101  HaplotypeCaller          1  true          12-12-24 21:36:30:112       11  1356402990112
+HaplotypeCaller-1-42  respublica.cm.cluster  1356402990212  12-12-24 21:36:30:212  HaplotypeCaller          1  true          12-12-24 21:36:30:222       10  1356402990222
+HaplotypeCaller-1-73  respublica.cm.cluster  1356402990482  12-12-24 21:36:30:482  HaplotypeCaller          1  true          12-12-24 21:36:30:490        8  1356402990490
+HaplotypeCaller-1-72  respublica.cm.cluster  1356402990473  12-12-24 21:36:30:473  HaplotypeCaller          1  true          12-12-24 21:36:30:482        9  1356402990482
+HaplotypeCaller-1-53  respublica.cm.cluster  1356402990313  12-12-24 21:36:30:313  HaplotypeCaller          1  true          12-12-24 21:36:30:322        9  1356402990322
+HaplotypeCaller-1-66  respublica.cm.cluster  1356402990423  12-12-24 21:36:30:423  HaplotypeCaller          1  true          12-12-24 21:36:30:432        9  1356402990432
+HaplotypeCaller-1-10  respublica.cm.cluster  1356402989853  12-12-24 21:36:29:853  HaplotypeCaller          1  true          12-12-24 21:36:29:865       12  1356402989865
+HaplotypeCaller-1-25  respublica.cm.cluster  1356402990028  12-12-24 21:36:30:028  HaplotypeCaller          1  true          12-12-24 21:36:30:039       11  1356402990039
+HaplotypeCaller-1-7   respublica.cm.cluster  1356402989807  12-12-24 21:36:29:807  HaplotypeCaller          1  true          12-12-24 21:36:29:818       11  1356402989818
+HaplotypeCaller-1-47  respublica.cm.cluster  1356402990259  12-12-24 21:36:30:259  HaplotypeCaller          1  true          12-12-24 21:36:30:269       10  1356402990269
+HaplotypeCaller-1-34  respublica.cm.cluster  1356402990122  12-12-24 21:36:30:122  HaplotypeCaller          1  true          12-12-24 21:36:30:132       10  1356402990132
+HaplotypeCaller-1-15  respublica.cm.cluster  1356402989917  12-12-24 21:36:29:917  HaplotypeCaller          1  true          12-12-24 21:36:29:930       13  1356402989930
+HaplotypeCaller-1-24  respublica.cm.cluster  1356402990018  12-12-24 21:36:30:018  HaplotypeCaller          1  true          12-12-24 21:36:30:028       10  1356402990028
+HaplotypeCaller-1-16  respublica.cm.cluster  1356402989930  12-12-24 21:36:29:930  HaplotypeCaller          1  true          12-12-24 21:36:29:942       12  1356402989942
+HaplotypeCaller-1-70  respublica.cm.cluster  1356402990457  12-12-24 21:36:30:457  HaplotypeCaller          1  true          12-12-24 21:36:30:465        8  1356402990465
+HaplotypeCaller-1-58  respublica.cm.cluster  1356402990355  12-12-24 21:36:30:355  HaplotypeCaller          1  true          12-12-24 21:36:30:364        9  1356402990364
+HaplotypeCaller-1-49  respublica.cm.cluster  1356402990278  12-12-24 21:36:30:278  HaplotypeCaller          1  true          12-12-24 21:36:30:287        9  1356402990287
+HaplotypeCaller-1-74  respublica.cm.cluster  1356402990490  12-12-24 21:36:30:490  HaplotypeCaller          1  true          12-12-24 21:36:30:498        8  1356402990498
+HaplotypeCaller-1-13  respublica.cm.cluster  1356402989887  12-12-24 21:36:29:887  HaplotypeCaller          1  true          12-12-24 21:36:29:904       17  1356402989904
+HaplotypeCaller-1-2   respublica.cm.cluster  1356402989711  12-12-24 21:36:29:711  HaplotypeCaller          1  true          12-12-24 21:36:29:737       26  1356402989737
+HaplotypeCaller-1-51  respublica.cm.cluster  1356402990296  12-12-24 21:36:30:296  HaplotypeCaller          1  true          12-12-24 21:36:30:304        8  1356402990304
+HaplotypeCaller-1-65  respublica.cm.cluster  1356402990415  12-12-24 21:36:30:415  HaplotypeCaller          1  true          12-12-24 21:36:30:423        8  1356402990423
+HaplotypeCaller-1-71  respublica.cm.cluster  1356402990465  12-12-24 21:36:30:465  HaplotypeCaller          1  true          12-12-24 21:36:30:473        8  1356402990473
+HaplotypeCaller-1-41  respublica.cm.cluster  1356402990203  12-12-24 21:36:30:203  HaplotypeCaller          1  true          12-12-24 21:36:30:212        9  1356402990212
+HaplotypeCaller-1-8   respublica.cm.cluster  1356402989818  12-12-24 21:36:29:818  HaplotypeCaller          1  true          12-12-24 21:36:29:829       11  1356402989829
+HaplotypeCaller-1-62  respublica.cm.cluster  1356402990389  12-12-24 21:36:30:389  HaplotypeCaller          1  true          12-12-24 21:36:30:398        9  1356402990398
+HaplotypeCaller-1-18  respublica.cm.cluster  1356402989953  12-12-24 21:36:29:953  HaplotypeCaller          1  true          12-12-24 21:36:29:964       11  1356402989964
+HaplotypeCaller-1-68  respublica.cm.cluster  1356402990440  12-12-24 21:36:30:440  HaplotypeCaller          1  true          12-12-24 21:36:30:448        8  1356402990448
+HaplotypeCaller-1-79  respublica.cm.cluster  1356402990531  12-12-24 21:36:30:531  HaplotypeCaller          1  true          12-12-24 21:36:30:546       15  1356402990546
+HaplotypeCaller-1-19  respublica.cm.cluster  1356402989964  12-12-24 21:36:29:964  HaplotypeCaller          1  true          12-12-24 21:36:29:975       11  1356402989975
+HaplotypeCaller-1-81  respublica.cm.cluster  1356402990555  12-12-24 21:36:30:555  HaplotypeCaller          1  true          12-12-24 21:36:30:566       11  1356402990566
+HaplotypeCaller-1-20  respublica.cm.cluster  1356402989975  12-12-24 21:36:29:975  HaplotypeCaller          1  true          12-12-24 21:36:29:986       11  1356402989986
+HaplotypeCaller-1-5   respublica.cm.cluster  1356402989760  12-12-24 21:36:29:760  HaplotypeCaller          1  true          12-12-24 21:36:29:772       12  1356402989772
+HaplotypeCaller-1-39  respublica.cm.cluster  1356402990178  12-12-24 21:36:30:178  HaplotypeCaller          1  true          12-12-24 21:36:30:192       14  1356402990192
+HaplotypeCaller-1-4   respublica.cm.cluster  1356402989748  12-12-24 21:36:29:748  HaplotypeCaller          1  true          12-12-24 21:36:29:760       12  1356402989760
+HaplotypeCaller-1-40  respublica.cm.cluster  1356402990192  12-12-24 21:36:30:192  HaplotypeCaller          1  true          12-12-24 21:36:30:203       11  1356402990203
+HaplotypeCaller-1-64  respublica.cm.cluster  1356402990406  12-12-24 21:36:30:406  HaplotypeCaller          1  true          12-12-24 21:36:30:415        9  1356402990415
+HaplotypeCaller-1-37  respublica.cm.cluster  1356402990153  12-12-24 21:36:30:153  HaplotypeCaller          1  true          12-12-24 21:36:30:163       10  1356402990163
+HaplotypeCaller-1-59  respublica.cm.cluster  1356402990364  12-12-24 21:36:30:364  HaplotypeCaller          1  true          12-12-24 21:36:30:372        8  1356402990372
+HaplotypeCaller-1-29  respublica.cm.cluster  1356402990070  12-12-24 21:36:30:070  HaplotypeCaller          1  true          12-12-24 21:36:30:081       11  1356402990081
+HaplotypeCaller-1-75  respublica.cm.cluster  1356402990498  12-12-24 21:36:30:498  HaplotypeCaller          1  true          12-12-24 21:36:30:507        9  1356402990507
+
+#:GATKTable:10:2:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:;
+#:GATKTable:LocusScatterFunction:Job logs for LocusScatterFunction
+jobName              exechosts              startTime      formattedStartTime     analysisName          iteration  intermediate  formattedDoneTime      runtime  doneTime     
+HaplotypeCaller-6-1  respublica.cm.cluster  1356402990651  12-12-24 21:36:30:651  LocusScatterFunction          1  true          12-12-24 21:36:30:665       14  1356402990665
+HaplotypeCaller-1-1  respublica.cm.cluster  1356402989627  12-12-24 21:36:29:627  LocusScatterFunction          1  true          12-12-24 21:36:29:674       47  1356402989674
+
+#:GATKTable:10:2:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:;
+#:GATKTable:VariantEval:Job logs for VariantEval
+jobName            exechosts              startTime      formattedStartTime     analysisName  iteration  intermediate  formattedDoneTime      runtime  doneTime     
+HaplotypeCaller-4  respublica.cm.cluster  1356402990632  12-12-24 21:36:30:632  VariantEval           1  false         12-12-24 21:36:30:638        6  1356402990638
+HaplotypeCaller-2  respublica.cm.cluster  1356402990611  12-12-24 21:36:30:611  VariantEval           1  false         12-12-24 21:36:30:617        6  1356402990617
+
+#:GATKTable:10:1:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:;
+#:GATKTable:VariantFiltration:Job logs for VariantFiltration
+jobName            exechosts              startTime      formattedStartTime     analysisName       iteration  intermediate  formattedDoneTime      runtime  doneTime     
+HaplotypeCaller-3  respublica.cm.cluster  1356402990617  12-12-24 21:36:30:617  VariantFiltration          1  false         12-12-24 21:36:30:624        7  1356402990624
+
+#:GATKTable:10:1:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:;
+#:GATKTable:_function_:Job logs for _function_
+jobName            exechosts              startTime      formattedStartTime     analysisName  iteration  intermediate  formattedDoneTime      runtime  doneTime     
+HaplotypeCaller-5  respublica.cm.cluster  1356402990638  12-12-24 21:36:30:638  _function_            1  false         12-12-24 21:36:30:643        5  1356402990643
+

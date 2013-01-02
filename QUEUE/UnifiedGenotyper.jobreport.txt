@@ -1,0 +1,32 @@
+#:GATKReport.v1.1:5
+#:GATKTable:10:1:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:;
+#:GATKTable:.qlog_out.final.vcf.varannotator:Job logs for .qlog_out.final.vcf.varannotator
+jobName                           exechosts              startTime      formattedStartTime     analysisName                      iteration  intermediate  formattedDoneTime      runtime  doneTime     
+.qlog/out.final.vcf.varannotator  respublica.cm.cluster  1356392923608  12-12-24 18:48:43:608  .qlog_out.final.vcf.varannotator          1  false         12-12-24 18:48:43:619       11  1356392923619
+
+#:GATKTable:10:2:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:;
+#:GATKTable:UnifiedGenotyper:Job logs for UnifiedGenotyper
+jobName             exechosts              startTime      formattedStartTime     analysisName      iteration  intermediate  formattedDoneTime      runtime  doneTime     
+UnifiedGenotyper-1  respublica.cm.cluster  1356392923575  12-12-24 18:48:43:575  UnifiedGenotyper          1  false         12-12-24 18:48:43:599       24  1356392923599
+UnifiedGenotyper-5  respublica.cm.cluster  1356392923599  12-12-24 18:48:43:599  UnifiedGenotyper          1  false         12-12-24 18:48:43:608        9  1356392923608
+
+#:GATKTable:10:4:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:;
+#:GATKTable:VariantEval:Job logs for VariantEval
+jobName             exechosts              startTime      formattedStartTime     analysisName  iteration  intermediate  formattedDoneTime      runtime  doneTime     
+UnifiedGenotyper-8  respublica.cm.cluster  1356392923681  12-12-24 18:48:43:681  VariantEval           1  false         12-12-24 18:48:43:688        7  1356392923688
+UnifiedGenotyper-2  respublica.cm.cluster  1356392923623  12-12-24 18:48:43:623  VariantEval           1  false         12-12-24 18:48:43:632        9  1356392923632
+UnifiedGenotyper-4  respublica.cm.cluster  1356392923672  12-12-24 18:48:43:672  VariantEval           1  false         12-12-24 18:48:43:681        9  1356392923681
+UnifiedGenotyper-6  respublica.cm.cluster  1356392923644  12-12-24 18:48:43:644  VariantEval           1  false         12-12-24 18:48:43:656       12  1356392923656
+
+#:GATKTable:10:2:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:;
+#:GATKTable:VariantFiltration:Job logs for VariantFiltration
+jobName             exechosts              startTime      formattedStartTime     analysisName       iteration  intermediate  formattedDoneTime      runtime  doneTime     
+UnifiedGenotyper-7  respublica.cm.cluster  1356392923656  12-12-24 18:48:43:656  VariantFiltration          1  false         12-12-24 18:48:43:670       14  1356392923670
+UnifiedGenotyper-3  respublica.cm.cluster  1356392923632  12-12-24 18:48:43:632  VariantFiltration          1  false         12-12-24 18:48:43:644       12  1356392923644
+
+#:GATKTable:10:2:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:;
+#:GATKTable:_function_:Job logs for _function_
+jobName              exechosts              startTime      formattedStartTime     analysisName  iteration  intermediate  formattedDoneTime      runtime  doneTime     
+UnifiedGenotyper-11  respublica.cm.cluster  1356392923699  12-12-24 18:48:43:699  _function_            1  false         12-12-24 18:48:43:707        8  1356392923707
+UnifiedGenotyper-9   respublica.cm.cluster  1356392923688  12-12-24 18:48:43:688  _function_            1  false         12-12-24 18:48:43:699       11  1356392923699
+
