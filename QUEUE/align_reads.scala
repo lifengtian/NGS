@@ -28,6 +28,9 @@ class align_reads extends QScript {
 //  @input(doc="dbsnp ROD to use (must be in VCF format)", fullName="dbsnp", shortName="D", required=true)
 //  var dbSNP: Seq[File] = Seq()
 
+  @Input(doc="The reference file ", shortName="R")
+  var reference: File = _ // _ is scala shorthand for null
+
   /****************************************************************************
 * Optional Parameters
 ****************************************************************************/
@@ -81,7 +84,7 @@ class align_reads extends QScript {
 
   var bwaPath: File = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/bin/bwa"
 
-  var reference: String = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/hg19/hg19.fa"
+  //var reference: String = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/hg19/hg19.fa"
 
   var dbSNP: Seq[File] = Seq("/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/dbsnp_135.hg19.vcf")
 
@@ -346,6 +349,7 @@ def map_reads_with_bwa(bams: Seq[File]): Seq[File] = {
     this.memoryLimit = 16
     this.analysisName = queueLogDir + outBam + ".dedup"
     this.jobName = queueLogDir + outBam + ".dedup"
+    this.isIntermediate = true
   }
 
   case class joinBams (inBams: Seq[File], outBam: File) extends MergeSamFiles with ExternalCommonArgs {
