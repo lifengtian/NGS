@@ -1,0 +1,11 @@
+http://genome.ucsc.edu/cgi-bin/hgGateway?hgsid=187301261&clade=mammal&org=Human&db=hg19
+Note on chrM
+Since the release of the UCSC hg19 assembly, the Homo sapiens mitochondrion sequence (represented as "chrM" in the Genome Browser) has been replaced in GenBank with the record NC_012920. We have not replaced the original sequence, NC_001807, in the hg19 Genome Browser. We plan to use the Revised Cambridge Reference Sequence (rCRS) in the next human assembly release. 
+
+Chromosome naming scheme
+In addition to the "regular" chromosomes, the hg19 browser contains nine haplotype chromosomes and 59 unplaced contigs. If an unplaced contig is localized to a chromosome, the contig name is appended to the regular chromosome name, as in chr1_gl000191_random. If the chromosome is unknown, the contig is represented with the name "chrUn" followed by the contig identifier, as in chrUn_gl000211. Note that the chrUn contigs are no longer placed in a single, artificial chromosome as they have been in previous UCSC assemblies. See the sequences page for a complete list of hg19 chromosome names. 
+
+ The Y chromosome in this assembly contains two pseudoautosomal regions (PARs) that were taken from the corresponding regions in the X chromosome and are exact duplicates:
+
+    chrY:10001-2649520 and chrY:59034050-59363566
+    chrX:60001-2699520 and chrX:154931044-155260560 

@@ -1,0 +1,7 @@
+
+
+Convert Annovar summary results to VCF
+We did it 1) using vcftools to add columns; 2) custom script to concatenate the fields
+
+Came across this tool:
+http://varianttools.sourceforge.net/Annotation/HomePage
