@@ -1,0 +1,29 @@
+
+What is the magic add()?
+ * it lives in org.broadinstitute.sting.queue.engine.QGraph.scala
+/**
+* Adds a QScript created CommandLineFunction to the graph.
+* @param command Function to add to the graph.
+*/
+  def add(command: QFunction) {
+    try {
+      runningLock.synchronized {
+        if (running) {
+          command.qSettings = settings.qSettings
+          command.freeze()
+          val inputFiles = command.inputs
+          var outputFiles = command.outputs
+          outputFiles :+= command.jobOutputFile
+          if (command.jobErrorFile != null)
+            outputFiles :+= command.jobErrorFile
+          val inputs = getQNode(inputFiles.sorted(fileOrdering))
+          val outputs = getQNode(outputFiles.sorted(fileOrdering))
+          addEdge(new FunctionEdge(command, inputs, outputs))
+        }
+      }
+    } catch {
+      case e: Exception =>
+        throw new QException("Error adding function: " + command, e)
+    }
+  }
+? what is a CommandLineFunction?
