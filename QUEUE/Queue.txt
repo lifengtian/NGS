@@ -1,4 +1,3 @@
-
 What is the magic add()?
  * it lives in org.broadinstitute.sting.queue.engine.QGraph.scala
 /**
@@ -26,4 +25,31 @@ What is the magic add()?
         throw new QException("Error adding function: " + command, e)
     }
   }
-? what is a CommandLineFunction?
+? what is a CommandLineFunction? --> QFunction --> inputs --> getFieldFiles
+  /**
+* Gets the files from the fields. The fields must be a File, a FileExtension, or a Seq or Set of either.
+* @param fields Fields to get files.
+* @return for the fields.
+*/
+  private def getFieldFiles(fields: Seq[ArgumentSource]): Seq[File] = {
+    var files: Seq[File] = Nil
+    for (field <- fields)
+      files ++= getFieldFiles(field)
+    files.distinct
+  }
+
+  /**
+* Gets the files from the field. The field must be a File, a FileExtension, or a Seq or Set of either.
+* @param field Field to get files.
+* @return for the field.
+*/
+  def getFieldFiles(field: ArgumentSource): Seq[File] = {
+    var files: Seq[File] = Nil
+    CollectionUtils.foreach(getFieldValue(field), (fieldValue) => {
+      val file = fieldValueToFile(field, fieldValue)
+      if (file != null)
+        files :+= file
+    })
+    files.distinct
+  }
+
