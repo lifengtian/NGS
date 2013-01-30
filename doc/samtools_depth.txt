@@ -1,0 +1,9 @@
+
+The maximum depth of coverage is around 8091. Where is the bug hiding?
+
+samtools assumes multiple bam files. To calculate the total coverage,
+we have to iterate through all bam files.
+
+n_plp[i]  is the number of covering reads for a position from the i-th BAM.
+bam_mplp_auto(mplp, &tid, &pos, n_plp, plp) will return a n_plp.
+
