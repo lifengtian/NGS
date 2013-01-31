@@ -63,5 +63,17 @@ $40 = {
 bam_pileup.c:
                                 if (n_plp == iter->max_plp) { // then double the capacity
 
-  bam_plp_set_maxcnt
+There is a function  bam_plp_set_maxcnt which is never called?
+
+I modified maxcnt to 18000 and things starts to getting right.
+
+bam_plp_next
+when is maxcnt actually checked?
+bam_plp_push (which is called from bam_plp_auto):
+if (iter->tid == b->core.tid && iter->pos == b->core.pos && iter->mp->cnt > iter->maxcnt) return 0;
+
+
+The calling stack is:
+bam_plp_auto -> bam_plp_next
+             ->  bam_plp_push
 
