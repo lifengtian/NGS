@@ -67,6 +67,25 @@ There is a function  bam_plp_set_maxcnt which is never called?
 
 I modified maxcnt to 18000 and things starts to getting right.
 
+bam_plp_t bam_plp_init(bam_plp_auto_f func, void *data)
+{
+        bam_plp_t iter;
+        iter = calloc(1, sizeof(struct __bam_plp_t));
+        iter->mp = mp_init();
+        iter->head = iter->tail = mp_alloc(iter->mp);
+        iter->dummy = mp_alloc(iter->mp);
+        iter->max_tid = iter->max_pos = -1;
+        iter->flag_mask = BAM_DEF_MASK;
+        iter->maxcnt = 18000;
+        if (func) {
+                iter->func = func;
+                iter->data = data;
+                iter->b = bam_init1();
+        }
+        return iter;
+}
+
+
 bam_plp_next
 when is maxcnt actually checked?
 bam_plp_push (which is called from bam_plp_auto):
