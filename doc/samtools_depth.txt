@@ -1,4 +1,12 @@
-The maximum depth of coverage is around 8091. Where is the bug hiding?
+Issue: 
+We saw maximum of depth of coverage around 8,000 for a deep sequencing project.
+The true depth is around 50,000.
+What goes wrong?
+
+Conclusion:
+It turns out that maxcnt is set by -d (samtools mpileup); however, it is not properly handled in samtools depth.
+
+
 
 samtools assumes multiple bam files. To calculate the total coverage,
 we have to iterate through all bam files.
@@ -7,7 +15,7 @@ n_plp[i]  is the number of covering reads for a position from the i-th BAM.
 bam_mplp_auto(mplp, &tid, &pos, n_plp, plp) will return a n_plp.
 
 
-macbook-pro:lec3 tianl$ gdb
+macbook-pro: tianl$ gdb
 GNU gdb 6.3.50-20050815 (Apple version gdb-1820) (Sat Jun 16 02:40:11 UTC 2012)
 Copyright 2004 Free Software Foundation, Inc.
 GDB is free software, covered by the GNU General Public License, and you are
@@ -86,6 +94,8 @@ bam_plp_t bam_plp_init(bam_plp_auto_f func, void *data)
 }
 
 
+
+
 bam_plp_next
 when is maxcnt actually checked?
 bam_plp_push (which is called from bam_plp_auto):
@@ -95,4 +105,8 @@ if (iter->tid == b->core.tid && iter->pos == b->core.pos && iter->mp->cnt > iter
 The calling stack is:
 bam_plp_auto -> bam_plp_next
              ->  bam_plp_push
+
+
+it turns out that maxcnt is set by -d (samtools mpileup); however, it is not properly handled in samtools depth.
+
 
