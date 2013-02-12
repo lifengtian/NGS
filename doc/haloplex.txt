@@ -26,14 +26,12 @@ for i in Sample* ; do
     r2=pe_2.fq.gz
     echo "/mnt/isilon/cag/ngs/hiseq/tianl/Maris/HaloPlex/bin/trim_galore_zip/trim_galore -q 20 --phred33 --fastqc \
        -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -a2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT \
-       --stringency 3 -e 0.1 --length 20 -o $trimgalore_output --paired --trim1 $r1 $r2 " | qsub -cwd -V -N $i.trim -hold_jid $i.catR1,$i.catR2
+       --stringency 3 -e 0.1 --length 20 -o $trimgalore_output/fastq --paired --trim1 $r1 $r2 " | qsub -cwd -V \
+                               -N trim.$i -hold_jid catR1.$i,catR2.$i
 
 
 
     #fq2bam
-    fq1=$trimgalore_output
-    JAVA_QUEUE="/usr/bin/java -Djava.io.tmpdir=/scratch1/tianl -Xmx6g -Xms6g -jar /mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/Queue-2.3-9-ge5ebf34/Queue.jar"
-
     base=$trimgalore_output
     fastq=$base/fastq
     bam=$base/bam
@@ -41,13 +39,20 @@ for i in Sample* ; do
     mkdir -p $bam
     mkdir -p $fastq
 
-                  
+    fq1=$fastq/pe_1_val_1.fq.gz
+    fq2=$fastq/pe_2_val_2.fq.gz
+    JAVA_QUEUE="/usr/bin/java -Djava.io.tmpdir=/scratch1/tianl -Xmx6g -Xms6g \
+                  -jar /mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/Queue-2.3-9-ge5ebf34/Queue.jar"
+
+
+
     echo "
-    /usr/bin/java -Xmx4g -jar $PICARD/FastqToSam.jar QUALITY_FORMAT=Standard FASTQ=$r1  FASTQ2=$r2  \
-                OUTPUT=$i.bam SAMPLE_NAME=$i LB=HaloPlex PU=PU PL=Illumina CN=Miami \
+    /usr/bin/java -Xmx4g -jar $PICARD/FastqToSam.jar QUALITY_FORMAT=Standard FASTQ=$fq1  FASTQ2=$fq2  \
+                OUTPUT=$bam/$i.bam SAMPLE_NAME=$i LB=HaloPlex PU=PU PL=Illumina CN=Miami \
                 SORT_ORDER=unsorted CREATE_INDEX=TRUE RG=$i
                 
-        " | qsub -cwd -S /bin/sh -N f$sm -l mem_free=10G,h_vmem=12G -o f2bam.$i.o.log -e f2bam.$i.err.log
+        " | qsub -cwd -S /bin/sh -N f$sm -l mem_free=10G,h_vmem=12G -o f2bam.$i.o.log -e f2bam.$i.err.log -N fq2bam.$i \
+                 -hold_jid trim.$i
         
 
     # process next sample
