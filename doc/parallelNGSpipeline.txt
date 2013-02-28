@@ -1,0 +1,17 @@
+
+http://www.optispotter.com/
+
+An OptiSpotter™ project typically starts with our firm advising your researchers  on how to refactor 
+their research code from long-running serial jobs to independent components. 
+If the research is already organized in such components, Princeton Consultants’ experts can help you take 
+the next step by transforming code from “cloud friendly” to “spot friendly.”
+
+We then employ a special software framework that runs your research in Amazon Elastic Cloud Compute (EC2) 
+Spot Instances. OptiSpotter™ monitors the pricing and availability in real time and uses custom optimization 
+algorithms to dispatch the pieces to the fastest, lowest cost collection of processors--potentially spread 
+across instance types and availability zones. OptiSpotter™ contains a continuous solve model that both replans 
+unrun jobs and reschedules jobs that have been cancelled.
+
+
+The unit of NGS input data is a pair of reads, about 100 bp long.
+Mojority of them will be mapped to the reference 100% (count NM:i:0 from a sam file)

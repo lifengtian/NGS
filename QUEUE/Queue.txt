@@ -1,0 +1,55 @@
+What is the magic add()?
+ * it lives in org.broadinstitute.sting.queue.engine.QGraph.scala
+/**
+* Adds a QScript created CommandLineFunction to the graph.
+* @param command Function to add to the graph.
+*/
+  def add(command: QFunction) {
+    try {
+      runningLock.synchronized {
+        if (running) {
+          command.qSettings = settings.qSettings
+          command.freeze()
+          val inputFiles = command.inputs
+          var outputFiles = command.outputs
+          outputFiles :+= command.jobOutputFile
+          if (command.jobErrorFile != null)
+            outputFiles :+= command.jobErrorFile
+          val inputs = getQNode(inputFiles.sorted(fileOrdering))
+          val outputs = getQNode(outputFiles.sorted(fileOrdering))
+          addEdge(new FunctionEdge(command, inputs, outputs))
+        }
+      }
+    } catch {
+      case e: Exception =>
+        throw new QException("Error adding function: " + command, e)
+    }
+  }
+? what is a CommandLineFunction? --> QFunction --> inputs --> getFieldFiles
+  /**
+* Gets the files from the fields. The fields must be a File, a FileExtension, or a Seq or Set of either.
+* @param fields Fields to get files.
+* @return for the fields.
+*/
+  private def getFieldFiles(fields: Seq[ArgumentSource]): Seq[File] = {
+    var files: Seq[File] = Nil
+    for (field <- fields)
+      files ++= getFieldFiles(field)
+    files.distinct
+  }
+
+  /**
+* Gets the files from the field. The field must be a File, a FileExtension, or a Seq or Set of either.
+* @param field Field to get files.
+* @return for the field.
+*/
+  def getFieldFiles(field: ArgumentSource): Seq[File] = {
+    var files: Seq[File] = Nil
+    CollectionUtils.foreach(getFieldValue(field), (fieldValue) => {
+      val file = fieldValueToFile(field, fieldValue)
+      if (file != null)
+        files :+= file
+    })
+    files.distinct
+  }
+

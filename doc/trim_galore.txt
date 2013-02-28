@@ -1,0 +1,414 @@
+
+can't use cutadapt directly since it can not handle the paired-end reads.
+
+This link ( http://seqanswers.com/forums/archive/index.php/t-19874.html ) brings me to Trim_galore!
+
+/mnt/isilon/cag/ngs/hiseq/tianl/Maris/HaloPlex/bin/trim_galore_zip/trim_galore -q 20 --phred33 --fastqc -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -a2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT --stringency 3 -e 0.1 --length 20 -o trimgalore_output --paired --trim1 $r1 $r2 
+
+SUMMARISING RUN PARAMETERS
+==========================
+Input filename: ebc1_S1_L001_R1_001.fastq
+Quality Phred score cutoff: 20
+Quality encoding type selected: ASCII+33
+Adapter sequence: 'AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC'
+Maximum trimming error rate: 0.1 (default)
+Optional adapter 2 sequence (only used for read 2 of paired-end files): 'AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT'
+Minimum required adapter overlap (stringency): 3 bp
+Minimum required sequence length for both reads before a sequence pair gets removed: 20 bp
+All sequences will be trimmed by 1 bp on their 3' end to avoid problems with invalid paired-end alignments with Bowtie 1
+Running FastQC on the data once trimming has completed
+
+Writing final adapter and quality trimmed output to ebc1_S1_L001_R1_001_trimmed.fq
+
+
+  >>> Now performing quality (cutoff 20) and adapter trimming in a single pass for the adapter sequence: 'AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC' from file ebc1_S1_L001_R1_001.fastq <<<
+cutadapt version 1.2.1
+Command line parameters: -f fastq -e 0.1 -q 20 -O 3 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC ebc1_S1_L001_R1_001.fastq
+Maximum error rate: 10.00%
+   No. of adapters: 1
+   Processed reads:      1690280
+   Processed bases:    255232280 bp (255.2 Mbp)
+     Trimmed reads:      1335380 (79.0%)
+   Quality-trimmed:      8173817 bp (72.4 Mbp) (3.20% of total)
+     Trimmed bases:     72401601 bp (72.4 Mbp) (28.37% of total)
+   Too short reads:            0 (0.0% of processed reads)
+    Too long reads:            0 (0.0% of processed reads)
+        Total time:    115.28 s
+     Time per read:      0.07 ms
+
+=== Adapter 1 ===
+
+Adapter 'AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC', length 34, was trimmed 1335380 times.
+No. of allowed errors:
+0-9 bp: 0; 10-19 bp: 1; 20-29 bp: 2; 30-34 bp: 3
+
+Lengths of removed sequences
+length  count   expected        max. errors
+3       10484   26410.6 0
+4       5158    6602.7  0
+5       4501    1650.7  0
+6       6896    412.7   0
+7       49555   103.2   0
+8       6910    25.8    0
+9       5812    6.4     0
+10      5608    1.6     1
+11      6123    0.4     1
+12      7403    0.1     1
+13      25397   0.0     1
+14      14508   0.0     1
+15      7190    0.0     1
+16      7145    0.0     1
+17      14648   0.0     1
+18      9896    0.0     1
+19      5772    0.0     1
+20      6309    0.0     2
+21      6225    0.0     2
+22      8730    0.0     2
+23      9244    0.0     2
+24      8555    0.0     2
+25      28904   0.0     2
+26      53755   0.0     2
+27      9811    0.0     2
+28      13933   0.0     2
+29      8968    0.0     2
+30      6969    0.0     3
+31      5524    0.0     3
+32      5785    0.0     3
+33      8894    0.0     3
+34      32197   0.0     3
+35      7412    0.0     3
+36      8777    0.0     3
+37      7643    0.0     3
+38      13766   0.0     3
+39      5916    0.0     3
+40      7604    0.0     3
+41      10815   0.0     3
+42      6927    0.0     3
+43      9984    0.0     3
+44      8201    0.0     3
+45      7095    0.0     3
+46      6542    0.0     3
+47      8506    0.0     3
+48      12396   0.0     3
+49      7523    0.0     3
+50      9025    0.0     3
+51      7249    0.0     3
+52      2151    0.0     3
+53      2435    0.0     3
+54      2829    0.0     3
+55      4089    0.0     3
+56      1736    0.0     3
+57      1696    0.0     3
+58      2396    0.0     3
+59      4349    0.0     3
+60      3060    0.0     3
+61      3373    0.0     3
+62      2760    0.0     3
+63      2303    0.0     3
+64      20882   0.0     3
+65      3347    0.0     3
+66      8410    0.0     3
+67      3416    0.0     3
+68      14453   0.0     3
+69      5986    0.0     3
+70      9999    0.0     3
+71      70431   0.0     3
+72      10136   0.0     3
+73      7828    0.0     3
+74      27268   0.0     3
+75      40208   0.0     3
+76      481144  0.0     3
+77      26551   0.0     3
+78      1404    0.0     3
+79      368     0.0     3
+80      238     0.0     3
+81      266     0.0     3
+82      341     0.0     3
+83      913     0.0     3
+84      288     0.0     3
+85      427     0.0     3
+86      533     0.0     3
+87      1250    0.0     3
+88      1400    0.0     3
+89      612     0.0     3
+90      371     0.0     3
+91      414     0.0     3
+92      364     0.0     3
+93      553     0.0     3
+94      540     0.0     3
+95      1124    0.0     3
+96      589     0.0     3
+97      1554    0.0     3
+98      698     0.0     3
+99      703     0.0     3
+100     382     0.0     3
+101     556     0.0     3
+102     959     0.0     3
+103     208     0.0     3
+104     147     0.0     3
+105     129     0.0     3
+106     135     0.0     3
+107     212     0.0     3
+108     41      0.0     3
+109     56      0.0     3
+110     72      0.0     3
+111     52      0.0     3
+112     21      0.0     3
+113     25      0.0     3
+114     22      0.0     3
+115     23      0.0     3
+116     20      0.0     3
+117     21      0.0     3
+118     20      0.0     3
+119     51      0.0     3
+120     17      0.0     3
+121     14      0.0     3
+122     20      0.0     3
+123     23      0.0     3
+124     24      0.0     3
+125     35      0.0     3
+126     27      0.0     3
+127     21      0.0     3
+128     14      0.0     3
+129     25      0.0     3
+130     14      0.0     3
+131     17      0.0     3
+132     6       0.0     3
+133     5       0.0     3
+134     13      0.0     3
+135     11      0.0     3
+136     12      0.0     3
+137     15      0.0     3
+138     14      0.0     3
+139     11      0.0     3
+140     18      0.0     3
+141     14      0.0     3
+142     27      0.0     3
+143     18      0.0     3
+144     21      0.0     3
+145     19      0.0     3
+146     32      0.0     3
+147     51      0.0     3
+148     63      0.0     3
+149     92      0.0     3
+150     241     0.0     3
+151     918     0.0     3
+RUN STATISTICS FOR INPUT FILE: ebc1_S1_L001_R1_001.fastq
+=============================================
+1690280 sequences processed in total
+Sequences removed because they became shorter than the length cutoff of 20 bp:  0 (0.0%)
+
+Writing report to 'trimgalore_output/ebc1_S1_L001_R2_001.fastq_trimming_report.txt'
+
+SUMMARISING RUN PARAMETERS
+==========================
+Input filename: ebc1_S1_L001_R2_001.fastq
+Quality Phred score cutoff: 20
+Quality encoding type selected: ASCII+33
+Adapter sequence: 'AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC'
+Maximum trimming error rate: 0.1 (default)
+Optional adapter 2 sequence (only used for read 2 of paired-end files): 'AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT'
+Minimum required adapter overlap (stringency): 3 bp
+Minimum required sequence length for both reads before a sequence pair gets removed: 20 bp
+All sequences will be trimmed by 1 bp on their 3' end to avoid problems with invalid paired-end alignments with Bowtie 1
+Running FastQC on the data once trimming has completed
+
+Writing final adapter and quality trimmed output to ebc1_S1_L001_R2_001_trimmed.fq
+
+
+  >>> Now performing quality (cutoff 20) and adapter trimming in a single pass for the adapter sequence: 'AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT' from file ebc1_S1_L001_R2_001.fastq <<<
+cutadapt version 1.2.1
+Command line parameters: -f fastq -e 0.1 -q 20 -O 3 -a AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT ebc1_S1_L001_R2_001.fastq
+Maximum error rate: 10.00%
+   No. of adapters: 1
+   Processed reads:      1690280
+   Processed bases:    255232280 bp (255.2 Mbp)
+     Trimmed reads:      1319357 (78.1%)
+   Quality-trimmed:     15793654 bp (66.1 Mbp) (6.19% of total)
+     Trimmed bases:     66083824 bp (66.1 Mbp) (25.89% of total)
+   Too short reads:            0 (0.0% of processed reads)
+    Too long reads:            0 (0.0% of processed reads)
+        Total time:    137.68 s
+     Time per read:      0.08 ms
+
+=== Adapter 1 ===
+
+Adapter 'AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT', length 58, was trimmed 1319357 times.
+
+No. of allowed errors:
+0-9 bp: 0; 10-19 bp: 1; 20-29 bp: 2; 30-39 bp: 3; 40-49 bp: 4; 50-58 bp: 5
+
+Lengths of removed sequences
+length  count   expected        max. errors
+3       13251   26410.6 0
+4       5045    6602.7  0
+5       4353    1650.7  0
+6       5480    412.7   0
+7       51502   103.2   0
+8       7111    25.8    0
+9       11306   6.4     0
+10      7048    1.6     1
+11      5209    0.4     1
+12      12784   0.1     1
+13      21363   0.0     1
+14      12266   0.0     1
+15      4835    0.0     1
+16      6068    0.0     1
+17      20001   0.0     1
+18      2846    0.0     1
+19      6486    0.0     1
+20      4234    0.0     2
+21      4604    0.0     2
+22      8629    0.0     2
+23      9257    0.0     2
+24      9028    0.0     2
+25      27816   0.0     2
+26      54801   0.0     2
+27      12053   0.0     2
+28      18466   0.0     2
+29      6220    0.0     2
+30      14170   0.0     3
+31      1617    0.0     3
+32      7831    0.0     3
+33      3904    0.0     3
+34      32726   0.0     3
+35      5346    0.0     3
+36      6661    0.0     3
+37      7310    0.0     3
+38      11925   0.0     3
+39      8288    0.0     3
+40      7255    0.0     4
+41      10236   0.0     4
+42      16783   0.0     4
+43      1624    0.0     4
+44      7188    0.0     4
+45      16128   0.0     4
+46      5167    0.0     4
+47      11354   0.0     4
+48      5555    0.0     4
+49      6756    0.0     4
+50      7646    0.0     5
+51      8515    0.0     5
+52      715     0.0     5
+53      1399    0.0     5
+54      2070    0.0     5
+55      3648    0.0     5
+56      1562    0.0     5
+57      1811    0.0     5
+58      2371    0.0     5
+59      3841    0.0     5
+60      3287    0.0     5
+61      3147    0.0     5
+62      3017    0.0     5
+63      3440    0.0     5
+64      21908   0.0     5
+65      5624    0.0     5
+66      13594   0.0     5
+67      20851   0.0     5
+68      455507  0.0     5
+69      198283  0.0     5
+70      4613    0.0     5
+71      1132    0.0     5
+72      345     0.0     5
+73      217     0.0     5
+74      261     0.0     5
+75      350     0.0     5
+76      2483    0.0     5
+77      179     0.0     5
+78      187     0.0     5
+79      156     0.0     5
+80      266     0.0     5
+81      220     0.0     5
+82      182     0.0     5
+83      435     0.0     5
+84      115     0.0     5
+85      131     0.0     5
+86      118     0.0     5
+87      380     0.0     5
+88      381     0.0     5
+89      209     0.0     5
+90      85      0.0     5
+91      127     0.0     5
+92      94      0.0     5
+93      196     0.0     5
+94      142     0.0     5
+95      452     0.0     5
+96      156     0.0     5
+97      603     0.0     5
+98      315     0.0     5
+99      346     0.0     5
+100     131     0.0     5
+101     231     0.0     5
+102     453     0.0     5
+103     95      0.0     5
+104     83      0.0     5
+105     95      0.0     5
+106     75      0.0     5
+107     128     0.0     5
+108     22      0.0     5
+109     28      0.0     5
+110     49      0.0     5
+111     28      0.0     5
+112     13      0.0     5
+113     16      0.0     5
+114     13      0.0     5
+115     4       0.0     5
+116     4       0.0     5
+117     11      0.0     5
+118     10      0.0     5
+119     18      0.0     5
+120     4       0.0     5
+121     5       0.0     5
+122     10      0.0     5
+123     4       0.0     5
+124     8       0.0     5
+125     10      0.0     5
+126     5       0.0     5
+127     7       0.0     5
+128     9       0.0     5
+129     4       0.0     5
+130     3       0.0     5
+131     3       0.0     5
+132     7       0.0     5
+133     3       0.0     5
+134     2       0.0     5
+135     3       0.0     5
+136     2       0.0     5
+137     4       0.0     5
+138     3       0.0     5
+139     4       0.0     5
+140     4       0.0     5
+141     2       0.0     5
+142     9       0.0     5
+143     4       0.0     5
+144     5       0.0     5
+145     7       0.0     5
+146     16      0.0     5
+147     14      0.0     5
+148     16      0.0     5
+149     41      0.0     5
+150     88      0.0     5
+151     546     0.0     5
+
+
+RUN STATISTICS FOR INPUT FILE: ebc1_S1_L001_R2_001.fastq
+=============================================
+1690280 sequences processed in total
+Sequences removed because they became shorter than the length cutoff of 20 bp:  0 (0.0%)
+
+Validate paired-end files ebc1_S1_L001_R1_001_trimmed.fq and ebc1_S1_L001_R2_001_trimmed.fq
+file_1 ebc1_S1_L001_R1_001_trimmed.fq file_2 ebc1_S1_L001_R2_001_trimmed.fq
+
+
+>>>>> Now validing the length of the 2 paired-end infiles: ebc1_S1_L001_R1_001_trimmed.fq and ebc1_S1_L001_R2_001_trimmed.fq <<<<<
+Writing validated paired-end read 1 reads to ebc1_S1_L001_R1_001_val_1.fq
+Writing validated paired-end read 2 reads to ebc1_S1_L001_R2_001_val_2.fq
+
+Total number of sequences analysed: 1690280
+
+Number of sequence pairs removed: 36796 (2.18%)
+
+
+  >>> Now running FastQC on the validated data ebc1_S1_L001_R1_001_val_1.fq<<<
+
+
