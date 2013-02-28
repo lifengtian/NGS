@@ -1,6 +1,7 @@
-package org.broadinstitute.sting.queue.qscripts.examples
+package org.broadinstitute.sting.queue.qscripts
 
 import org.broadinstitute.sting.queue.QScript
+import org.broadinstitute.sting.queue.function
 import org.broadinstitute.sting.queue.extensions.gatk._
 
 import org.broadinstitute.sting.commandline.Hidden
@@ -11,29 +12,35 @@ import org.broadinstitute.sting.gatk.walkers.genotyper.GenotypeLikelihoodsCalcul
   
 import org.broadinstitute.sting.queue.extensions.snpeff._
 
-/**
- * UnifiedGenotyper 
- */
-class Genotyper extends QScript {
-  // 'qscript' is now the same as 'ExampleUnifiedGenotyper.this'
-  qscript =>
+import org.broadinstitute.sting.queue.util.VCF_BAM_utilities
+import collection.JavaConversions._   
+import net.sf.samtools.SAMFileReader
+import net.sf.samtools.SAMFileHeader.SortOrder
 
+import org.broadinstitute.sting.queue.util.QScriptUtils
+import org.broadinstitute.sting.queue.function.ListWriterFunction
+
+class StandardUnifiedGenotyper extends QScript {
+  qscript =>
 
   // Required arguments.  All initialized to empty values.
 
   @Input(doc="The reference file for the bam files.", shortName="R")
-  var referenceFile: File = _ // _ is scala shorthand for null
+  var referenceFile: File = _ 
 
-  @Input(doc="Bam file to genotype.", shortName="I")
-  var bamFile: Seq[File] = _
+  @Input(doc="A file contains Bam files to genotype.", shortName="I")
+  var bamFile: File = _
 
   // The following arguments are all optional.
 
   @Input(doc="An optional file with a list of intervals to proccess.", shortName="L", required=false)
   var intervals: File = _
 
+  @Argument(shortName="pwd",required=true)
+  var pwd: String = _
+
   @Argument(doc="interval padding ", fullName="interval_padding", shortName="ip",required=false)
-  var ip: Int = _
+  var ip: Int = 100 
 
   @Argument(doc="A optional list of filter names.", shortName="snpfilter", required=false)
   var snpfilterNames: List[String] =  List("LowQualityDepth","MappingQuality","StrandBias","HaplotypeScoreHigh","MQRankSumLow","ReadPosRankSumLow" )
@@ -47,6 +54,12 @@ class Genotyper extends QScript {
   @Argument(doc="An optional list of filter expressions.", shortName="indelfilterExpression", required=false)
   var indelfilterExpressions: List[String] = List ("QD < 2.0", "FS > 200.0",  "ReadPosRankSum < -20.0", "InbreedingCoeff < -0.8")
 
+  @Argument(doc="Do you want the combined VCF?", shortName="combine", required=false)
+  var combineFlag : Boolean = false 
+ 
+  @Argument(doc="Do you want to selectsamples into individual VCFs?", shortName="selectsamples", required=false)
+  var selectsamplesFlag : Boolean = true
+
 
   // This trait allows us set the variables below in one place,
   // and then reuse this trait on each CommandLineGATK function below.
@@ -59,26 +72,33 @@ class Genotyper extends QScript {
     this.interval_padding = ip
   }
   
-  
+  // Global  
   val queueLogDir: String = ".qlog/" // Gracefully hide Queue's output
-  
+  val dbsnp_file: String = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/dbsnp_135.hg19.vcf"
+  val ref_file: String = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/hg19/hg19.fa"
+
   @Hidden
   @Argument(doc="How many ways to scatter/gather", fullName="scatter_gather", shortName="sg", required=false)
   var nContigs: Int = -1
 
+  @Hidden
+  @Argument(doc="only run snp", shortName="onlysnp", required=false)
+  var onlysnp: Boolean = false 
+
+
   /*  Functions  */
-  def call_genotypes_indel(bams: Seq[File])  {
-    val genotyper = new UnifiedGenotyper with UnifiedGenotyperArguments
+  def call_genotypes_indel(bams: Seq[File], outVcf: File, waitforVcf: File)  {
+    val genotyper = new myUGindel(bams, outVcf, waitforVcf) with UnifiedGenotyperArguments
     val variantFilter = new VariantFiltration with UnifiedGenotyperArguments
     val evalUnfiltered = new VariantEval with UnifiedGenotyperArguments
     val evalFiltered = new VariantEval with UnifiedGenotyperArguments
 
-    genotyper.scatterCount = nContigs 
+//    genotyper.scatterCount = nContigs 
+ //   genotyper.num_cpu_threads_per_data_thread = 2
+   // genotyper.input_file = bams
+   // genotyper.out = outVcf 
 
-    genotyper.input_file = bams
-    genotyper.out = "unifiedgenotyper.indel.vcf"
-
-    genotyper.genotype_likelihoods_model = GenotypeLikelihoodsCalculationModel.Model.INDEL
+    //genotyper.genotype_likelihoods_model = GenotypeLikelihoodsCalculationModel.Model.INDEL
 
     evalUnfiltered.eval :+= genotyper.out
     evalUnfiltered.out = swapExt(genotyper.out, "vcf", "eval")
@@ -97,22 +117,22 @@ class Genotyper extends QScript {
       add(variantFilter, evalFiltered)
 }
 
-def call_genotypes_snp(bams: Seq[File])  {
-    val genotyper = new UnifiedGenotyper with UnifiedGenotyperArguments
+def call_genotypes_snp(bams: Seq[File], outVcf: File)  {
+    val genotyper = new myUGsnp(bams, outVcf) with UnifiedGenotyperArguments
     val variantFilter = new VariantFiltration with UnifiedGenotyperArguments
     val evalUnfiltered = new VariantEval with UnifiedGenotyperArguments
     val evalFiltered = new VariantEval with UnifiedGenotyperArguments
 
-    genotyper.scatterCount = nContigs
+    //genotyper.scatterCount = nContigs
+    //genotyper.num_cpu_threads_per_data_thread = 2
+    //genotyper.input_file = bams
+    //genotyper.out = outVcf
 
-    genotyper.input_file = bams
-    genotyper.out = "unifiedgenotyper.snp.vcf"
-
-    genotyper.genotype_likelihoods_model = GenotypeLikelihoodsCalculationModel.Model.SNP
+    //genotyper.genotype_likelihoods_model = GenotypeLikelihoodsCalculationModel.Model.SNP
 
     evalUnfiltered.eval :+= genotyper.out
     evalUnfiltered.out = swapExt(genotyper.out, "vcf", "eval")
-    evalUnfiltered.dbsnp = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/dbsnp_135.hg19.vcf"
+    evalUnfiltered.dbsnp = dbsnp_file 
 
     variantFilter.variant = genotyper.out
     variantFilter.out = swapExt(genotyper.out, "vcf", "filtered.vcf")
@@ -121,7 +141,7 @@ def call_genotypes_snp(bams: Seq[File])  {
 
     evalFiltered.eval :+= variantFilter.out
     evalFiltered.out = swapExt(variantFilter.out, "vcf", "eval")
-    evalFiltered.dbsnp = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/dbsnp_135.hg19.vcf"
+    evalFiltered.dbsnp = dbsnp_file 
 
     add(genotyper, evalUnfiltered)
     // Only add variant filtration to the pipeline if filters were passed in
@@ -130,30 +150,156 @@ def call_genotypes_snp(bams: Seq[File])  {
 }
 
 
-  def annotate_snpEff(inVcf: File) {
+  def annotate_snp (inVcf: File) {
         val eff = new SnpEff
         eff.config = new File("/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/snpEff_2_0_5/snpEff.config")
         eff.genomeVersion = "GRCh37.64"
 
+
 	eff.inVcf = inVcf
-	var snpEffout: File  = swapExt(eff.inVcf, "vcf", "snpEff.vcf")
-        eff.outVcf = swapExt(eff.inVcf, "vcf", "snpEff.out")
+	val snpEffout  = swapExt(eff.inVcf, "vcf", "snpEff.vcf") 
+        eff.outVcf = swapExt(eff.inVcf, "vcf", "snpEff.out") 
        	 
         eff.javaClasspath = List("/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/snpEff_2_0_5/")
         eff.jarFile = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/snpEff_2_0_5/snpEff.jar"
-    
-        add(eff)
-	add(varannotator(eff.inVcf,eff.outVcf,snpEffout))
+   
+	val annovarout = swapExt(snpEffout, "vcf", "annovar.vcf") 
+	add(eff, varannotator(eff.inVcf,eff.outVcf,snpEffout), annovar_snp (snpEffout, annovarout))
+
+
+
 }
 
+  def annotate_indel (inVcf: File) {
+        val eff = new SnpEff
+        eff.config = new File("/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/snpEff_2_0_5/snpEff.config")
+        eff.genomeVersion = "GRCh37.64"
+
+        eff.inVcf = inVcf
+        val snpEffout  = swapExt(eff.inVcf, "vcf", "snpEff.vcf")
+	eff.outVcf = swapExt(eff.inVcf, "vcf", "snpEff.out")
+
+        eff.javaClasspath = List("/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/snpEff_2_0_5/")
+        eff.jarFile = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/snpEff_2_0_5/snpEff.jar"
+
+        val annovarout = swapExt(snpEffout, "vcf", "annovar.vcf")
+        add(eff, varannotator(eff.inVcf,eff.outVcf,snpEffout), annovar_indel (snpEffout, annovarout))
+}
+
+
+
+def findSampleIDsFromBAMs ( bams: Seq[File] ) : List[String] = {
+    val sampleTable = scala.collection.mutable.Map.empty[String, Seq[File]]
+
+    for (bam <- bams) {
+      val samReader = new SAMFileReader(bam)
+      val header = samReader.getFileHeader
+      val readGroups = header.getReadGroups
+	
+      // only allow one sample per file. Bam files with multiple samples would require pre-processing of the file
+      // with PrintReads to separate the samples. Tell user to do it himself!
+      assert(!QScriptUtils.hasMultipleSamples(readGroups), "The pipeline requires that only one sample is present in a BAM file. Please separate the samples in " + bam)
+
+      // Fill out the sample table with the readgroups in this file
+      for (rg <- readGroups) {
+        val sample = rg.getSample
+        if (!sampleTable.contains(sample))
+         {
+		 sampleTable(sample) = Seq(bam) 
+      	 } 
+	}
+    }
+
+	var sampleList : List[String] = Nil
+
+	for ((sample, bamList) <- sampleTable.toMap ) {
+		sampleList = sampleList :+ sample
+	}
+
+	//var cohortFile = new File("/mnt/isilon/cag/ngs/hiseq/Miami/RUN/IMF/VCF/test2/sampleName.list")
+        //add(writeList(sampleList, cohortFile))
+
+	sampleList
+  }
+
+
+
+
   def script() {
+	val snpFile="unifiedgenotyper.snp.vcf"
+	val indelFile="unifiedgenotyper.indel.vcf"
 
-	call_genotypes_snp(bamFile)
-	//call_genotypes_indel(bamFile)
-	//annotate_snpEff("unifiedgenotyper.indel.filtered.vcf")
-	annotate_snpEff("unifiedgenotyper.snp.filtered.vcf")
+	var indel_filtered_vcfFile=swapExt(indelFile,"vcf","filtered.vcf")
+	var snp_filtered_vcfFile=swapExt(snpFile, "vcf", "filtered.vcf")
+
+	var snp_filtered_snpEff_annovar_vcfFile = swapExt(snpFile, "vcf", "filtered.snpEff.annovar.vcf")
+	var indel_filtered_snpEff_annovar_vcfFile = swapExt(indelFile, "vcf", "filtered.snpEff.annovar.vcf")
+	var combined_vcfFile="unifiedgenotyper.combined.vcf"
+
+	val bams = QScriptUtils.createSeqFromFile(bamFile)
 
 
+	val sampleNames = findSampleIDsFromBAMs(bams )
+
+        var cohortFile = new File("/mnt/isilon/cag/ngs/hiseq/Miami/RUN/IMF/VCF/test2/sampleName2.list")
+        add(writeList(sampleNames, cohortFile))
+
+	if ( onlysnp ) {
+	        call_genotypes_snp(bams, snpFile)
+		annotate_snp(snp_filtered_vcfFile)
+	} else {
+	        call_genotypes_snp(bams, snpFile)
+        	call_genotypes_indel(bams, indelFile, snpFile)	
+		annotate_indel(indel_filtered_vcfFile)
+		annotate_snp(snp_filtered_vcfFile)
+	
+		// combine SNP and INDEL
+		if ( combineFlag ) {
+                	add ( combineSNPandINDEL(snp_filtered_snpEff_annovar_vcfFile, indel_filtered_snpEff_annovar_vcfFile, combined_vcfFile) )
+        	}
+
+	}
+
+        if ( selectsamplesFlag ) {
+                for ( sam <- sampleNames ) {
+                                if ( onlysnp ) {
+					add ( selectsample ( snp_filtered_snpEff_annovar_vcfFile, "SID" + sam + ".snp.vcf", sam) )
+				} else {
+	
+					if ( combineFlag ) {
+                	                        add ( selectsample ( combined_vcfFile, "SID" + sam + ".vcf" , sam ) )
+                        	        } else
+                                	{
+                                        	add ( selectsample ( indel_filtered_snpEff_annovar_vcfFile, "SID" + sam + ".indel.vcf", sam) )
+                                        	add ( selectsample ( snp_filtered_snpEff_annovar_vcfFile, "SID" + sam + ".snp.vcf", sam) )
+                                	}
+				}
+                }
+        }
+
+
+}
+
+
+case class combineSNPandINDEL (snp: File, indel: File, outFile: File) extends CombineVariants with UnifiedGenotyperArguments {
+	@Input var snpFile: File = snp
+	@Input var indelFile: File = indel
+	@Output var output: File = outFile 
+        this.variant = Seq(snp, indel)
+        this.out = outFile
+	this.isIntermediate = false
+}
+
+case class selectsample (inVcf: File, outVcf: File, samplename: String) extends SelectVariants {
+    this.variant = inVcf
+    this.out = outVcf
+    this.sample_name = Seq(samplename)
+    //this.excludeNonVariants = true
+    //this.excludeFiltered = true
+    this.R = qscript.referenceFile
+    this.isIntermediate = false
+    this.analysisName = queueLogDir + outVcf + ".varannotator"
+    this.jobName = queueLogDir + outVcf + ".varannotator"
   }
 
 case class varannotator (inVcf: File, inSnpEffFile: File, outVcf: File) extends VariantAnnotator  {
@@ -161,13 +307,68 @@ case class varannotator (inVcf: File, inSnpEffFile: File, outVcf: File) extends 
     this.snpEffFile = inSnpEffFile
     this.out = outVcf
     this.alwaysAppendDbsnpId = true
-    this.D = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/dbsnp_135.hg19.vcf"
-    this.R = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/hg19/hg19.fa"
+    this.D = dbsnp_file
+    this.R = ref_file
     this.A = Seq("SnpEff")
     this.isIntermediate = false
     this.analysisName = queueLogDir + outVcf + ".varannotator"
     this.jobName = queueLogDir + outVcf + ".varannotator"
     this.scatterCount = nContigs
   }
+
+
+  // General arguments to non-GATK tools
+  trait ExternalCommonArgs extends CommandLineFunction {
+    this.memoryLimit = 6
+    this.isIntermediate = false
+    this.nCoresRequest = 2
+  }
+
+case class annovar_indel (inVCF: File, outVCF: File) extends CommandLineFunction with ExternalCommonArgs {
+    @Input var vcf = inVCF
+	@Output var annovarVcf = outVCF
+	def commandLine = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/annotation_pipeline/annotate_indel_queue.sh " + pwd + " UG " +  vcf + " " + annovarVcf 
+    this.analysisName = queueLogDir + annovarVcf + ".annovar_indel"
+    this.jobName = queueLogDir + annovarVcf + ".annovar_indel"
+    this.memoryLimit=6
 }
 
+case class annovar_snp (inVCF: File, outVCF: File) extends CommandLineFunction with ExternalCommonArgs {
+    @Input var vcf = inVCF
+        @Output var annovarVcf = outVCF
+        def commandLine = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/annotation_pipeline/annotate_snp_queue.sh " + pwd + " UG " +  vcf + " " + annovarVcf
+    this.analysisName = queueLogDir + annovarVcf + ".annovar_snp"
+    this.jobName = queueLogDir + annovarVcf + ".annovar_snp"
+    this.memoryLimit=6
+}
+
+  case class writeList(inBams: Seq[File], outBamList: File) extends ListWriterFunction {
+    this.inputFiles = inBams
+    this.listFile = outBamList
+    this.analysisName = queueLogDir + outBamList + ".bamList"
+    this.jobName = queueLogDir + outBamList + ".bamList"
+  }
+
+case class myUGindel(inBams: Seq[File], outVcf: File, waitforVcf: File)  extends UnifiedGenotyper { 
+    @Input var vcf = waitforVcf
+    this.scatterCount = nContigs
+    this.num_cpu_threads_per_data_thread = 2
+    this.input_file = inBams
+    this.out = outVcf
+    this.genotype_likelihoods_model = GenotypeLikelihoodsCalculationModel.Model.INDEL
+    this.memoryLimit = 14
+    //this.min_mapping_quality_score = 0
+}
+
+case class myUGsnp (inBams: Seq[File], outVcf: File)  extends UnifiedGenotyper {
+    this.scatterCount = nContigs
+    this.num_cpu_threads_per_data_thread = 2
+    this.input_file = inBams
+    this.out = outVcf
+    this.genotype_likelihoods_model = GenotypeLikelihoodsCalculationModel.Model.SNP
+    this.memoryLimit = 14
+    //this.min_mapping_quality_score = 0 //min_mapping_quality_score
+}
+
+
+}

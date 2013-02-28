@@ -246,9 +246,8 @@ def map_reads_with_bwa(bams: Seq[File]): Seq[File] = {
       add(clean(bamList, targetIntervals, cleanedBam),
           dedup(cleanedBam, dedupedBam, metricsFile),
           cov(dedupedBam, preRecalFile),
-          recal(dedupedBam, preRecalFile, recalBam),
-          cov(recalBam, postRecalFile))
-
+          recal(dedupedBam, preRecalFile, recalBam ))
+          //cov(recalBam, postRecalFile)
 
       cohortList :+= recalBam
     }
@@ -270,6 +269,7 @@ def map_reads_with_bwa(bams: Seq[File]): Seq[File] = {
   trait ExternalCommonArgs extends CommandLineFunction {
     this.memoryLimit = 4
     this.isIntermediate = true
+    this.nCoresRequest = 4
   }
 
   // General arguments to GATK walkers
@@ -414,7 +414,9 @@ def map_reads_with_bwa(bams: Seq[File]): Seq[File] = {
     def commandLine = bwaPath + " aln -t " + bwaThreads + " -q 5 " + reference + " -b" + index + " " + bam + " > " + sai
     this.analysisName = queueLogDir + outSai1 + ".bwa_aln_pe1"
     this.jobName = queueLogDir + outSai1 + ".bwa_aln_pe1"
-  }
+    this.memoryLimit=6
+    this.nCoresRequest = bwaThreads
+}
 
   case class bwa_sam_pe (inBam: File, inSai1: File, inSai2:File, outBam: File) extends CommandLineFunction with ExternalCommonArgs {
     @Input(doc="bam file to be aligned") var bam = inBam
@@ -425,6 +427,7 @@ def map_reads_with_bwa(bams: Seq[File]): Seq[File] = {
     this.memoryLimit = 6
     this.analysisName = queueLogDir + outBam + ".bwa_sam_pe"
     this.jobName = queueLogDir + outBam + ".bwa_sam_pe"
+    this.nCoresRequest = 8
   }
 
 
