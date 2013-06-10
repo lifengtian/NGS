@@ -22,6 +22,8 @@ import org.broadinstitute.sting.queue.function.ListWriterFunction
 
 import org.apache.commons.io.FilenameUtils
 
+import org.broadinstitute.sting.gatk.arguments.ValidationExclusion
+
 class StandardUnifiedGenotyper extends QScript {
   qscript =>
 
@@ -32,6 +34,18 @@ class StandardUnifiedGenotyper extends QScript {
 
   @Input(doc="A file contains Bam files to genotype.", shortName="I")
   var bamFile: File = _
+
+  @Input(doc="The reference file for the dbSNP files.", shortName="D")
+  var dbsnpFile: File = _
+
+  @Input(doc="The reference file for the HapMap files.", shortName="Hapmap")
+  var hapmapFile: File = _
+
+  @Input(doc="The reference file for the Mills Indels files.", shortName="Mills")
+  var millsDevineFile: File = _
+
+  @Input(doc="The reference file for the Omni files.", shortName="Omni")
+  var omniFile: File = _
 
   // The following arguments are all optional.
 
@@ -88,14 +102,13 @@ class StandardUnifiedGenotyper extends QScript {
  
   // Global  
   val queueLogDir: String = ".qlog/" // Gracefully hide Queue's output
-  val dbsnpFile: String = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/dbsnp_135.hg19.vcf"
-  val hapmapFile: String = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/hapmap_3.3.hg19.sites.vcf" 
-  val omniFile: String = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/1000G_omni2.5.hg19.sites.vcf"
+  //val hapmapFile: String = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/hapmap_3.3.hg19.sites.vcf" 
+  //val omniFile: String = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/1000G_omni2.5.hg19.sites.vcf"
 
   // not used in UG
-  val kgIndelFile: String = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/1000G_phase1.indels.hg19.vcf"
+  //val kgIndelFile: String = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/1000G_phase1.indels.hg19.vcf"
 	// used in indel VQSR
-  val millsDevineFile: String = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/Mills_and_1000G_gold_standard.indels.hg19.sites.vcf"
+  //val millsDevineFile: String = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/hg19/Mills_and_1000G_gold_standard.indels.hg19.sites.vcf"
 
 
   @Hidden
@@ -310,8 +323,8 @@ def findSampleIDsFromBAMs ( bams: Seq[File] ) : List[String] = {
                 	                        add ( selectsample ( combined_vcfFile, "SID" + sam + ".vcf" , sam ) )
                         	        } else
                                 	{
-                                        	//add ( selectsample ( indel_filtered_snpEff_annovar_vcfFile, "SID" + sam + ".indel.vcf", sam) )
-                                        	add ( selectsample ( vqsrindelFile, "SID" + sam + ".indel.vcf", sam) )
+                                        	add ( selectsample ( indel_filtered_snpEff_annovar_vcfFile, "SID" + sam + ".indel.vcf", sam) )
+                                        	//add ( selectsample ( vqsrindelFile, "SID" + sam + ".indel.vcf", sam) )
                                         	//add ( selectsample ( snp_filtered_snpEff_annovar_vcfFile, "SID" + sam + ".snp.vcf", sam) )
                                         	add ( selectsample ( vqsrsnpFile, "SID" + sam + ".snp.vcf", sam) )
                                 	}
@@ -342,6 +355,7 @@ case class selectsample (inVcf: File, outVcf: File, samplename: String) extends 
     this.isIntermediate = false
     this.analysisName = queueLogDir + outVcf + ".varannotator"
     this.jobName = queueLogDir + outVcf + ".varannotator"
+    this.U = ValidationExclusion.TYPE.LENIENT_VCF_PROCESSING
   }
 
 case class varannotator (inVcf: File, inSnpEffFile: File, outVcf: File) extends VariantAnnotator  {

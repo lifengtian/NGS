@@ -30,7 +30,7 @@ class StandardUnifiedGenotyper extends QScript {
   @Input(doc="The reference file for the bam files.", shortName="R")
   var referenceFile: File = _ 
 
-  @Input(doc="The reference file for the bam files.", shortName="D")
+  @Input(doc="The reference file for the dbSNP files.", shortName="D")
   var dbsnp_file: File = _
 
   @Input(doc="A file contains Bam files to genotype.", shortName="I")
@@ -79,8 +79,6 @@ class StandardUnifiedGenotyper extends QScript {
   
   // Global  
   val queueLogDir: String = ".qlog/" // Gracefully hide Queue's output
-  //val dbsnp_file: String = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/gatk/bundle/2.2/hg19ucsc/dbsnp_137.hg19.vcf"
-  //val ref_file: String = "/mnt/isilon/cag/ngs/hiseq/respublica/pipeline/hg19/hg19.fa"
 
   @Hidden
   @Argument(doc="How many ways to scatter/gather", fullName="scatter_gather", shortName="sg", required=false)
