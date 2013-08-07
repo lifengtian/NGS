@@ -414,6 +414,8 @@ case class myUGindel(inBams: Seq[File], outVcf: File, waitforVcf: File)  extends
     this.genotype_likelihoods_model = GenotypeLikelihoodsCalculationModel.Model.INDEL
     this.memoryLimit = 14
     //this.min_mapping_quality_score = 0
+	this.rf=Seq("BadCigar")
+
 }
 
 case class myUGsnp (inBams: Seq[File], outVcf: File)  extends UnifiedGenotyper {
@@ -424,6 +426,7 @@ case class myUGsnp (inBams: Seq[File], outVcf: File)  extends UnifiedGenotyper {
     this.genotype_likelihoods_model = GenotypeLikelihoodsCalculationModel.Model.SNP
     this.memoryLimit = 14
     //this.min_mapping_quality_score = 0 //min_mapping_quality_score
+	        this.rf=Seq("BadCigar")
 }
 
   case class VQSR(inVCF: File, tranches: File, recal: File, vqsrRscript: File,  isSNP: Boolean ) extends VariantRecalibrator with CommandLineGATKArgs {
